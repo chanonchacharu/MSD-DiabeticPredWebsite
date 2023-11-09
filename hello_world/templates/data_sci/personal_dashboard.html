@@ -102,15 +102,7 @@
       background-color: #dff0d8;
       color: #3c763d;
     }
-    /* @media (max-width: 768px) {
-      .main-container {
-        flex-direction: column;
-        align-items: center;
-      }
-      .form-container, .dashboard-container {
-        max-width: 100%;
-      }
-    } */
+
     @media (max-width: 768px) {
       .form-header, .dashboard-header {
         margin: 1rem;
@@ -129,7 +121,7 @@
         <div>
             <p style="text-align: center;font-size: smaller;">For Diabetic Status Prediction using Pupe's Algo and Recording</p>
         </div>
-        <form method="post" action="">
+        <form method="post" action="{% url 'add_data' %}">
             {% csrf_token %}
             <div class="form-group">
                 <label for="pregnancies">Pregnancies</label>
@@ -160,6 +152,7 @@
         </div>
     </div>
     <!-- Dashboard Section -->
+    <!-- Inside the dashboard-container -->
     <div class="dashboard-container">
       <div class="dashboard-header">
         <h2>Status Dashboard</h2>
@@ -167,10 +160,22 @@
       <div>
         <p style="text-align: center;font-size: smaller;">Your Most Recent Data and diabetic prediction will be shown here</p>
       </div>
-      <!-- Dashboard content goes here -->
-      <!-- This could be dynamically generated based on server-side logic -->
+      <!-- Prediction result -->
+      <div class="status-card {{ result_message|lower }}">
+        Prediction: <strong>{{ result_message }}</strong>
+      </div>
+      <!-- Changes since last record if any -->
+      {% if changes %}
+        <div>
+          <h4>Changes since last record:</h4>
+          <p>Pregnancies Change: {{ changes.pregnancies_change }}</p>
+          <p>Glucose Change: {{ changes.glucose_change }}</p>
+          <p>Insulin Change: {{ changes.insulin_change }}</p>
+          <p>BMI Change: {{ changes.bmi_change }}</p>
+          <p>Age Change: {{ changes.age_change }}</p>
+        </div>
+      {% endif %}
     </div>
-  </div>
 </body>
 
 <script>

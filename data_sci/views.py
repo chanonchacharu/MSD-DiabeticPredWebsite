@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
+from django.contrib import messages
 
 from django.db.models import Count, Avg, Count
 
@@ -66,7 +65,66 @@ def predict_diabetic_instance(input_data):
     
     return y_pred
 
+
 def personal_health_data_add(request):
+    print('hi')
+    if request.method == "POST":
+        form_data = request.POST
+        pregnancies = int(form_data.get('pregnancies', 0))
+        glucose = float(form_data.get('glucose', 0))
+        insulin = float(form_data.get('insulin', 0))
+        bmi = float(form_data.get('bmi', 0))
+        age = int(form_data.get('age', 0))
+
+        input_data = [[pregnancies, glucose, insulin, bmi, age]]
+
+        y_pred = predict_diabetic_instance(input_data)
+        prediction = int(y_pred[0])
+        result_message = 'Diabetes' if prediction == 1 else 'No Diabetes'
+
+        # Get the most recent record for the user - by date
+        last_record = PersonalHealthProfile.objects.latest('added_date')
+
+        changes = {}
+        if last_record:
+            changes = {
+                'pregnancies_change': pregnancies - last_record.Pregnancies,
+                'glucose_change': glucose - last_record.Glucose,
+                'insulin_change': insulin - last_record.Insulin,
+                'bmi_change': bmi - last_record.BMI,
+                'age_change': age - last_record.Age,
+            }
+
+        # Create new record
+        new_item = PersonalHealthProfile(
+            Pregnancies=pregnancies,
+            Glucose=glucose,
+            Insulin=insulin,
+            BMI=bmi,
+            Age=age,
+            Prediction=result_message,
+        )
+
+        # Attempt to save the new record
+        try:
+            new_item.save()
+            print('Your health data has been recorded successfully!')
+        except Exception as e:  # It's good to capture the exception
+            print(f"ERROR: {e}")
+            return redirect('person_dashboard')  # Redirect back to the form in case of error
+
+        context = {
+            'result_message': result_message,
+            'changes': changes
+        }
+        print(f'Get the context: {context}')
+        return render(request, 'data_sci/personal_dashboard.html', context)
+
+    # If it's not a POST request, just display the form page
+    print('WRONG')
+    return render(request, 'data_sci/personal_dashboard.html')
+
+def personal_health_data_add2(request):
     if request.method == "POST":
         form_data = request.POST
         pregnancies = form_data['pregnancies']
@@ -212,8 +270,6 @@ def diabetic_distribution_data(request):
             data['non_diabetic'] = entry['total']
 
     return JsonResponse(data, safe=False)
-
-
 
 def personal_dashboard(request):
     return render(request, 'data_sci/personal_dashboard.html')
