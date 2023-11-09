@@ -65,9 +65,41 @@ def predict_diabetic_instance(input_data):
     
     return y_pred
 
+def determine_glucose_level(glucose):
+    if glucose < 100:
+        return 'Normal'
+    elif 100 <= glucose <= 125:
+        return 'Pre-diabetes'
+    else:
+        return 'Diabetes'
+
+def determine_bmi_category(bmi):
+    if bmi < 18.5:
+        return 'Underweight'
+    elif 18.5 <= bmi <= 24.9:
+        return 'Normal weight'
+    elif 25 <= bmi <= 29.9:
+        return 'Overweight'
+    else:
+        return 'Obese'
+
 
 def personal_health_data_add(request):
-    print('hi')
+    last_record = PersonalHealthProfile.objects.latest('added_date')
+    context = {
+        'last_record': last_record,
+        'result_message': None,
+        'changes': {
+            'pregnancies_change': 0,
+            'glucose_change': 0,
+            'insulin_change': 0,
+            'bmi_change': 0,
+            'age_change': 0,
+        },
+        'glucose_category': None,
+        'bmi_category': None,   
+    }
+
     if request.method == "POST":
         form_data = request.POST
         pregnancies = int(form_data.get('pregnancies', 0))
@@ -82,9 +114,6 @@ def personal_health_data_add(request):
         prediction = int(y_pred[0])
         result_message = 'Diabetes' if prediction == 1 else 'No Diabetes'
 
-        # Get the most recent record for the user - by date
-        last_record = PersonalHealthProfile.objects.latest('added_date')
-
         changes = {}
         if last_record:
             changes = {
@@ -95,7 +124,6 @@ def personal_health_data_add(request):
                 'age_change': age - last_record.Age,
             }
 
-        # Create new record
         new_item = PersonalHealthProfile(
             Pregnancies=pregnancies,
             Glucose=glucose,
@@ -105,24 +133,24 @@ def personal_health_data_add(request):
             Prediction=result_message,
         )
 
-        # Attempt to save the new record
         try:
             new_item.save()
             print('Your health data has been recorded successfully!')
-        except Exception as e:  # It's good to capture the exception
+        except Exception as e:  
             print(f"ERROR: {e}")
-            return redirect('person_dashboard')  # Redirect back to the form in case of error
+            return redirect('person_dashboard') 
 
-        context = {
-            'result_message': result_message,
-            'changes': changes
-        }
+        context['result_message'] = result_message
+        context['changes'] = changes
+
+        context['glucose_category'] = determine_glucose_level(glucose)
+        context['bmi_category'] = determine_bmi_category(bmi)
+
         print(f'Get the context: {context}')
         return render(request, 'data_sci/personal_dashboard.html', context)
 
-    # If it's not a POST request, just display the form page
-    print('WRONG')
-    return render(request, 'data_sci/personal_dashboard.html')
+    print('GET Request')
+    return render(request, 'data_sci/personal_dashboard.html', context)
 
 def personal_health_data_add2(request):
     if request.method == "POST":

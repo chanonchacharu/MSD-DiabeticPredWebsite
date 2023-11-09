@@ -8,108 +8,133 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+      background: #f4f7f6; /* Lighter background for a modern look */
+      color: #444; /* Darker text for better readability */
     }
     .main-container {
       display: flex;
       min-height: 100vh;
-      padding: 0 10%;
+      padding: 2% 5%; /* Adjusted padding */
       align-items: flex-start; /* Aligns the items at the top */
-      justify-content: center;
-      font-family: Arial, sans-serif;
+      justify-content: space-around; /* Distributes space around items */
     }
     .form-container, .dashboard-container {
       background: #fff;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      margin: 1rem;
+      padding: 20px; /* More padding for better spacing */
+      border-radius: 8px; /* Smoother border-radius */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+      margin: 20px;
+      width: 100%; /* Ensure full width */
+      max-width: 500px; /* Maximum width for large screens */
     }
-    .form-container {
-      flex-grow: 1;
-      max-width: 80%; /* Adjusts the width of the form container */
-    }
-    .dashboard-container {
-      flex-grow: 1;
-      max-width: 80%; /* Adjusts the width of the dashboard container */
-    }
-    /* Style adjustments */
     .form-header, .dashboard-header {
-        background-color: #4c7cfc; /* Adjusted color to match provided image */
-        color: #fff;
-        padding: 1rem;
-        border-radius: 12px;
-        text-align: center;
-        margin: 1rem 2rem 0 2rem; /* Adjusted margin for spacing and alignment */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: #5dade2; /* Softer blue */
+      color: #fff;
+      padding: 1rem;
+      border-radius: 8px; /* Consistent with card border-radius */
+      text-align: center;
+      margin: -20px -20px 20px -20px; /* Aligns header with card edges */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-
     .dashboard-header {
-        background-color: #ff616f; /* Adjusted color to match provided image */
+      background-color: #ff8577; /* Softer red */
     }
-
-    .form-container, .dashboard-container {
-      margin-top: 0; /* Remove top margin since the header is separate now */
-    }
-
     .form-group {
       margin-bottom: 1rem;
     }
     .form-group label {
       display: block;
       margin-bottom: .5rem;
-      color: #333;
+      font-weight: 600; /* Make labels slightly bolder */
     }
     .form-group input[type="number"],
     .form-group input[type="text"],
     .form-group select,
     .form-group button {
-      width: 100%;
+      width: calc(100% - 20px); /* Fixes overflow issue */
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
       font-size: 1rem;
+      box-sizing: border-box; /* Ensures padding doesn't add to width */
     }
     .form-group button {
       border: none;
       border-radius: 20px;
-      background-color: #009879;
+      background-color: #28a745; /* Green for positive action */
       color: white;
       cursor: pointer;
       margin-top: 1rem;
+      transition: background-color 0.3s ease; /* Smooth transition for hover effect */
     }
     .form-group button:hover {
-      background-color: #007961;
+      background-color: #218838; /* Darker green on hover */
     }
-    /* Additional styles for dashboard */
+    /* Dashboard styles */
+    .dashboard-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
     .dashboard-header {
-      margin-bottom: 2rem;
+      margin-bottom: 20px;
     }
+
     .status-card {
-      padding: 15px;
-      border-radius: 4px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 5px;
+      color: #fff;
       text-align: center;
-      font-size: 1.2rem;
-      font-weight: bold;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 2rem;
     }
-    .has-diabetes {
-      background-color: #ffdddd;
-      color: #a94442;
+
+    /* Add colors for prediction results */
+    .status-card.normal {
+      background-color: #4CAF50; /* Green for normal */
     }
-    .no-diabetes {
-      background-color: #dff0d8;
-      color: #3c763d;
+
+    .status-card.pre-diabetes {
+      background-color: #FFEB3B; /* Yellow for pre-diabetes */
+    }
+
+    .status-card.diabetes {
+      background-color: #F44336; /* Red for diabetes */
+    }
+
+    .dashboard-content {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .changes-container, .health-status {
+      flex: 1;
+      margin: 10px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .health-status {
+      text-align: right;
     }
 
     @media (max-width: 768px) {
-      .form-header, .dashboard-header {
-        margin: 1rem;
-        border-radius: 12px;
+      .dashboard-content {
+        flex-direction: column;
+      }
+
+      .health-status {
+        text-align: center;
+        order: -1; /* This will make health status appear above the changes on mobile */
       }
     }
-    
+
   </style>
 </head>
 <body>
@@ -123,10 +148,6 @@
         </div>
         <form method="post" action="{% url 'add_data' %}">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="pregnancies">Pregnancies</label>
-                <input type="number" value="{{form_data.pregnancies}}" name="pregnancies" required>
-            </div>
             <div class="form-group">
                 <label for="glucose">Glucose</label>
                 <input type="number" value="{{form_data.glucose}}" name="glucose" required>
@@ -144,6 +165,10 @@
                 <input type="number" value="{{form_data.age}}" name="age" required>
             </div>
             <div class="form-group">
+                <label for="pregnancies">Pregnancies</label>
+                <input type="number" value="{{form_data.pregnancies}}" name="pregnancies" required>
+            </div>
+            <div class="form-group">
                 <button type="submit">Predict</button>
             </div>
         </form>
@@ -152,7 +177,6 @@
         </div>
     </div>
     <!-- Dashboard Section -->
-    <!-- Inside the dashboard-container -->
     <div class="dashboard-container">
       <div class="dashboard-header">
         <h2>Status Dashboard</h2>
@@ -164,18 +188,27 @@
       <div class="status-card {{ result_message|lower }}">
         Prediction: <strong>{{ result_message }}</strong>
       </div>
-      <!-- Changes since last record if any -->
-      {% if changes %}
-        <div>
-          <h4>Changes since last record:</h4>
-          <p>Pregnancies Change: {{ changes.pregnancies_change }}</p>
-          <p>Glucose Change: {{ changes.glucose_change }}</p>
-          <p>Insulin Change: {{ changes.insulin_change }}</p>
-          <p>BMI Change: {{ changes.bmi_change }}</p>
-          <p>Age Change: {{ changes.age_change }}</p>
+    
+      <!-- Dashboard content -->
+      <div class="dashboard-content">
+        {% if changes %}
+          <div class="changes-container">
+            <h4>Changes since last record:</h4>
+            <p>Pregnancies Change: {{ changes.pregnancies_change }}</p>
+            <p>Glucose Change: {{ changes.glucose_change }}</p>
+            <p>Insulin Change: {{ changes.insulin_change }}</p>
+            <p>BMI Change: {{ changes.bmi_change }}</p>
+            <p>Age Change: {{ changes.age_change }}</p>
+          </div>
+        {% endif %}
+        <div class="health-status">
+          <h4>Health Status:</h4>
+          <p>Glucose Level: {{ glucose_category }}</p>
+          <p>BMI: {{ bmi_category }}</p>
         </div>
-      {% endif %}
+      </div>
     </div>
+    
 </body>
 
 <script>
