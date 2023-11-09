@@ -1,0 +1,266 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        .content {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            max-width: 960px;
+            margin: auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .selectors {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        label {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        select {
+            width: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #555;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        
+        .update-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .pretty-button {
+            padding: 10px 25px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .pretty-button:hover {
+            background-color: #4cae4c;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        #scatterPlot svg {
+                width: 100%;
+                height: auto;
+                max-width: 960px; /* Adjust this value based on your layout's max width */
+                margin: auto; /* Centers the SVG horizontally */
+        }
+        
+        .axis-label {
+            fill: #555; /* Or any other color you prefer for the axis labels */
+            font-size: 14px;
+        }
+        
+        .legend {
+            font-size: 12px;
+        }
+        
+        .legend rect {
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        
+        .legend text {
+            font-size: 12px;
+        }
+        </style>
+        
+        <div class="content">
+            <h1>PIMA Indian Diabetic Visualization</h1>
+            <p>
+                The scatter plot shows the relationship between two variables
+            </p>
+            <label for="xVariable">X Variable:</label>
+            <select id="xVariable">
+                <option value="Pregnancies">Pregnancies</option>
+                <option value="Glucose" selected>Glucose</option>
+                <option value="BloodPressure">BloodPressure</option>
+                <option value="SkinThickness">SkinThickness</option>
+                <option value="Insulin">Insulin</option>
+                <option value="BMI">BMI</option>
+                <option value="DiabetesPedigreeFunction">DiabetesPedigreeFunction</option>
+                <option value="Age">Age</option>
+            </select>
+        
+            <label for="yVariable">Y Variable:</label>
+            <select id="yVariable">
+                <option value="Pregnancies">Pregnancies</option>
+                <option value="Glucose">Glucose</option>
+                <option value="BloodPressure">BloodPressure</option>
+                <option value="SkinThickness">SkinThickness</option>
+                <option value="Insulin">Insulin</option>
+                <option value="BMI" selected>BMI</option>
+                <option value="DiabetesPedigreeFunction">DiabetesPedigreeFunction</option>
+                <option value="Age">Age</option>
+            </select>
+        
+            <div class="update-container">
+                <button id="updatePlot" class="pretty-button">Update Plot</button>
+            </div>
+        
+            <div id="scatterPlot"></div>
+        </div>
+        
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function(event) { 
+                const updateButton = document.getElementById('updatePlot');
+                const scatterPlotElement = d3.select('#scatterPlot');
+                const margin = {top: 20, right: 20, bottom: 30, left: 40};
+                const width = 960 - margin.left - margin.right;
+                const height = 500 - margin.top - margin.bottom;
+            
+                // Create SVG element
+                const svg = scatterPlotElement.append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+                updateButton.addEventListener('click', function() {
+                    const xVariable = document.getElementById('xVariable').value;
+                    const yVariable = document.getElementById('yVariable').value;
+                    updateScatterPlot(xVariable, yVariable);
+                });
+        
+                function updateDimensions() {
+                    var scatterPlotWidth = document.getElementById('scatterPlot').clientWidth;
+                    return scatterPlotWidth - margin.left - margin.right;
+                }
+            
+                function updateScatterPlot(xVar, yVar) {
+                    // Clear the current scatter plot
+                    svg.selectAll('*').remove();
+            
+                    // Fetch the data from your Django API endpoint
+                    d3.json('/scatter_plot_data/').then(function(data) {
+                        // Assume data is returned in the correct format and handle it accordingly
+        
+                        // Define the scales based on the data
+                        const xScale = d3.scaleLinear()
+                            .domain(d3.extent(data, d => d[xVar]))
+                            .range([0, width]);
+                        
+                        const yScale = d3.scaleLinear()
+                            .domain(d3.extent(data, d => d[yVar]))
+                            .range([height, 0]);
+            
+                        // Define the axes
+                        const xAxis = d3.axisBottom(xScale);
+                        const yAxis = d3.axisLeft(yScale);
+            
+                        // Draw the x-axis
+                        svg.append("g")
+                        .attr("transform", `translate(0,${height})`)
+                        .call(xAxis);
+        
+                        svg.append("text")
+                            .attr("class", "axis-label")
+                            .attr("text-anchor", "middle")
+                            .attr("x", width / 2)
+                            .attr("y", height + margin.bottom - 5)
+                            .text(xVar);
+        
+            
+                        // Draw the y-axis
+                        svg.append("g")
+                        .call(yAxis);
+        
+                        svg.append("text")
+                            .attr("class", "axis-label")
+                            .attr("text-anchor", "middle")
+                            .attr("transform", "rotate(-90)")
+                            .attr("y", -margin.left + 20)
+                            .attr("x", -height / 2)
+                            .attr("dy", "-1.5em")
+                            .text(yVar);
+            
+                        // Plot the data points as circles
+                        svg.selectAll(".dot")
+                            .data(data)
+                            .enter().append("circle")
+                            .attr("class", "dot")
+                            .attr("r", 3.5) // Radius of the circles
+                            .attr("cx", d => xScale(d[xVar]))
+                            .attr("cy", d => yScale(d[yVar]))
+                            .style("fill", d => d.Outcome === 1 ? "red" : "green"); // Color by Outcome
+            
+                        // Optionally, add axes labels
+                        svg.append("text")
+                            .attr("text-anchor", "end")
+                            .attr("x", width)
+                            .attr("y", height - 6)
+                            .text(xVar);
+            
+                        svg.append("text")
+                            .attr("text-anchor", "end")
+                            .attr("transform", "rotate(-90)")
+                            .attr("y", 6)
+                            .attr("dy", ".75em")
+                            .text(yVar);
+                        
+                        var legend = svg.selectAll(".legend")
+                            .data([{label: "Diabetic", color: "red"}, {label: "Not Diabetic", color: "green"}])
+                            .enter().append("g")
+                            .attr("class", "legend")
+                            .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+        
+                        // Draw legend colored rectangles
+                        legend.append("rect")
+                            .attr("x", width - 18)
+                            .attr("width", 18)
+                            .attr("height", 18)
+                            .style("fill", function(d) { return d.color; });
+        
+                        // Draw legend text
+                        legend.append("text")
+                            .attr("x", width - 24)
+                            .attr("y", 9)
+                            .attr("dy", ".35em")
+                            .style("text-anchor", "end")
+                            .text(function(d) { return d.label; });
+                    });
+                }
+        
+                updateScatterPlot('Glucose', 'BMI'); // Default features to be shown on first load
+            });
+        </script>
+</body>
+</html>

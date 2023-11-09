@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
+from django.http import JsonResponse
+
 from data_sci.models import PimaIndianDiabetic, PersonalHealthProfile
 from django.core.paginator import Paginator
 
@@ -167,5 +169,22 @@ def personal_health_data_delete(request, id):
     
     return redirect('personal_health_list')
 
+def scatter_plot_data(request):
+    data = list(
+        PimaIndianDiabetic.objects.values(
+            "Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
+            "Insulin", "BMI", "DiabetesPedigreeFunction", "Age", "Outcome"
+        )
+    )
+    return JsonResponse(data, safe=False)
+
+def scatter_plot_view(request):
+    features = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"]
+    context = {
+        'features': features,
+    }
+    return render(request, 'data_sci/visualization.html', context)
+
 def personal_dashboard(request):
     return render(request, 'data_sci/personal_dashboard.html')
+
