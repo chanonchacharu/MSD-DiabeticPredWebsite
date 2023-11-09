@@ -1,0 +1,27 @@
+<div class="container">
+    <h1>Showing {{ filter_type }} </h1>
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Diabetic Prediction</th>
+            <th>Glucose</th>
+            <th>Insulin</th>
+            <th>BMI</th>
+            <th>Age</th>
+            <th>Pregnancies</th>
+        </tr>
+        {% for row in datasets %}
+            <tr>
+                <td>{{ row.Prediction }}</td>
+                <td>{{ row.Glucose }}</td>
+                <td>{{ row.Insulin }}</td>
+                <td>{{ row.BMI }}</td>
+                <td>{{ row.Age }}</td>
+                <td>{{ row.Pregnancies }}</td>
+                <td>
+                    <a href="/data_sci/edit/{{ row.id }}">Edit</a>
+                    <a href="/data_sci/delete/{{ row.id }}">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>

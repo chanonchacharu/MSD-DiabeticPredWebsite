@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Prediction and Dashboard</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+  .container {
+    display: flex;
+    width: 80%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .form-section, .dashboard-section {
+    padding: 20px;
+    flex: 1;
+  }
+  .input-group {
+    margin-bottom: 10px;
+  }
+  .input-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  .status-card {
+    background: #eee;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  .submit-btn {
+    background: #5cb85c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .submit-btn:hover {
+    background: #4cae4c;
+  }
+  .dashboard-section h2 {
+    margin-top: 0;
+  }
+  /* Additional styling can go here */
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="form-section">
+    <h2>Input Information</h2>
+    <div class="input-group">
+      <label for="pregnancies">Number of Pregnancies</label>
+      <input type="number" id="pregnancies" name="pregnancies">
+    </div>
+    <div class="input-group">
+      <label for="glucose">Glucose Level</label>
+      <input type="text" id="glucose" name="glucose">
+    </div>
+    <div class="input-group">
+      <label for="insulin">Insulin Level</label>
+      <input type="text" id="insulin" name="insulin">
+    </div>
+    <div class="input-group">
+      <label for="bmi">BMI</label>
+      <input type="text" id="bmi" name="bmi">
+    </div>
+    <div class="input-group">
+      <label for="age">Age</label>
+      <input type="number" id="age" name="age">
+    </div>
+    <button class="submit-btn">Submit</button>
+  </div>
+  <div class="dashboard-section">
+    <h2>Status Dashboard</h2>
+    <div class="status-card">
+      <p>The prediction result shows that you are <strong>NOT DIABETIC</strong></p>
+    </div>
+    <div>
+      <h4>Most recent user data and diabetic prediction result</h4>
+      <!-- You would dynamically generate the graph here, possibly with a JavaScript library like Chart.js -->
+    </div>
+    <!-- More dashboard items can be added here -->
+  </div>
+</div>
+</body>
+</html>
