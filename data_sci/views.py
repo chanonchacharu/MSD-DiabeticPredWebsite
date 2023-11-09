@@ -3,6 +3,8 @@ from django.http import HttpResponse
 
 from django.http import JsonResponse
 
+from django.db.models import Count, Avg, Count
+
 from data_sci.models import PimaIndianDiabetic, PersonalHealthProfile
 from django.core.paginator import Paginator
 
@@ -184,6 +186,34 @@ def scatter_plot_view(request):
         'features': features,
     }
     return render(request, 'data_sci/visualization.html', context)
+
+def diabetic_distribution_data(request):
+    total_data_points = PimaIndianDiabetic.objects.count()
+
+    average_bmi = PimaIndianDiabetic.objects.aggregate(Avg('BMI'))['BMI__avg']
+    average_glucose = PimaIndianDiabetic.objects.aggregate(Avg('Glucose'))['Glucose__avg']
+    average_insulin = PimaIndianDiabetic.objects.aggregate(Avg('Insulin'))['Insulin__avg']
+
+    outcome_counts = PimaIndianDiabetic.objects.values('Outcome').annotate(total=Count('Outcome'))
+
+    data = {
+        'non_diabetic': 0,
+        'diabetic': 0,
+        'average_bmi': round(average_bmi, 2) if average_bmi is not None else 0,
+        'average_glucose': round(average_glucose, 2) if average_glucose is not None else 0,
+        'average_insulin': round(average_insulin, 2) if average_insulin is not None else 0,
+        'total_data_points': total_data_points,
+    }
+
+    for entry in outcome_counts:
+        if entry['Outcome'] == 1:
+            data['diabetic'] = entry['total']
+        else:
+            data['non_diabetic'] = entry['total']
+
+    return JsonResponse(data, safe=False)
+
+
 
 def personal_dashboard(request):
     return render(request, 'data_sci/personal_dashboard.html')

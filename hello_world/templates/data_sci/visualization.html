@@ -100,8 +100,67 @@
         .legend text {
             font-size: 12px;
         }
+
+        .svg-content-responsive {
+            display: block; 
+            max-width: 100%;
+            height: auto; 
+        }
         </style>
         
+        <style>
+            .container {
+                display: flex;
+                background-color: #e6e6e6; /* Container background color */
+                padding: 20px;
+                margin: 20px auto;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+                max-width: 1200px;
+            }
+            .left-column {
+                flex: 1;
+                padding: 10px;
+                background-color: #ffffff; /* White background for contrast */
+                margin-right: 10px; /* Adds a gap between the columns */
+                border-radius: 10px; /* Optional for rounded corners */
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Optional for depth */
+            }
+            .right-column {
+                flex: 1;
+                padding: 10px;
+                background-color: #ffffff; 
+                border-radius: 10px;
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            /* Styling for the statistics block */
+            .stats-container {
+                display: flex;
+                flex-wrap: wrap; /* Allow items to wrap onto multiple lines as needed */
+                justify-content: space-around;
+                align-items: stretch; /* Ensure that the items stretch to fill the container */
+            }
+            .stat-card {
+                background-color: #f0f0f0;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                text-align: center;
+                flex-basis: calc(50% - 20px); /* Adjust to 50% for 2 columns */
+                margin: 10px;
+                box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            }
+            .stat-card h3 {
+                font-size: 2em;
+                margin: 0.5em 0;
+            }
+            .stat-card p {
+                font-size: 1em;
+                margin: 0.5em 0;
+                color: #555;
+            }
+        </style>
+        
+
         <div class="content">
             <h1>PIMA Indian Diabetic Visualization</h1>
             <p>
@@ -137,6 +196,51 @@
         
             <div id="scatterPlot"></div>
         </div>
+
+        <div class="container">
+            <div class="left-column">
+                <h2 style="text-align: center;">Distribution of Diabetic Record</h2>
+                <div id="diabetic-chart"></div>
+            </div>
+            <div class="right-column">
+                <div class="stat-block">
+                    <h2 style="text-align: center;">Statistical Record</h2>
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <h3 id="total-data-points">767</h3>
+                            <p>data points</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="average-bmi"></h3>
+                            <p>Average BMI</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="average-glucose"></h3>
+                            <p>Average Glucose</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="average-insulin"></h3>
+                            <p>Average Insulin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            fetch('/distribution_count')
+                .then(response => response.json())
+                .then(data => {
+                    // Now you have your statistical data in the 'data' variable
+                    document.getElementById('total-data-points').textContent = data.total_data_points;
+                    document.getElementById('average-bmi').textContent = data.average_bmi;
+                    document.getElementById('average-glucose').textContent = data.average_glucose;
+                    document.getElementById('average-insulin').textContent = data.average_insulin
+                })
+                .catch(error => {
+                    console.error('Error fetching statistical data: ', error);
+                });
+        </script>
         
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <script>
@@ -149,8 +253,9 @@
             
                 // Create SVG element
                 const svg = scatterPlotElement.append("svg")
-                    .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("preserveAspectRatio", "xMinYMin meet")
+                    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+                    .classed("svg-content-responsive", true) // Class to make it responsive.
                     .append("g")
                     .attr("transform", `translate(${margin.left},${margin.top})`);
             
@@ -262,5 +367,89 @@
                 updateScatterPlot('Glucose', 'BMI'); // Default features to be shown on first load
             });
         </script>
+
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <!-- Bar Chart -->
+        <script type="text/javascript">
+            // Fetch the data from your endpoint
+            fetch('/distribution_count')
+              .then(response => response.json())
+              .then(data => {
+                drawDiabeticChart(data);
+                window.addEventListener('resize', () => drawDiabeticChart(data)); // Redraw chart on window resize
+              })
+              .catch(error => {
+                console.error('Error fetching data: ', error);
+              });
+        
+            function drawDiabeticChart(data) {
+              // Set the dimensions and margins of the graph
+              var margin = {top: 40, right: 30, bottom: 70, left: 60},
+                  width = parseInt(d3.select("#diabetic-chart").style('width')) - margin.left - margin.right,
+                  height = 400 - margin.top - margin.bottom;
+        
+              // Remove the old svg
+              d3.select("#diabetic-chart svg").remove();
+        
+              // Append the svg object to the body of the page
+              var svg = d3.select("#diabetic-chart")
+                .append("svg")
+                  .attr("preserveAspectRatio", "xMinYMin meet")
+                  .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
+                  .classed("svg-content-responsive", true) // Add this class to make it responsive.
+                .append("g")
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        
+              // Calculate the total for percentage calculation
+              var total = data.non_diabetic + data.diabetic;
+        
+              // X axis
+              var x = d3.scaleBand()
+                .range([0, width])
+                .domain(["Non-Diabetic", "Diabetic"])
+                .padding(0.1);
+              svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+        
+              // Add Y axis
+              var y = d3.scaleLinear()
+                .domain([0, d3.max([data.non_diabetic, data.diabetic])])
+                .range([height, 0]);
+              svg.append("g")
+                .call(d3.axisLeft(y));
+        
+              // Color scale
+              var colors = d3.scaleOrdinal()
+                .domain(["Non-Diabetic", "Diabetic"])
+                .range(["#4daf4a", "#e41a1c"]);
+        
+              // Bars
+              svg.selectAll(".bar")
+                .data([{"type":"Non-Diabetic", "value":data.non_diabetic}, {"type":"Diabetic", "value":data.diabetic}])
+                .enter()
+                .append("rect")
+                  .attr("class", "bar")
+                  .attr("x", d => x(d.type))
+                  .attr("y", d => y(d.value))
+                  .attr("width", x.bandwidth())
+                  .attr("height", d => height - y(d.value))
+                  .attr("fill", d => colors(d.type));
+        
+              // Text labels for counts and percentages
+              svg.selectAll(".label")
+                .data([{"type":"Non-Diabetic", "value":data.non_diabetic}, {"type":"Diabetic", "value":data.diabetic}])
+                .enter()
+                .append("text")
+                  .attr("class", "label")
+                  .attr("x", (d) => x(d.type) + x.bandwidth() / 2)
+                  .attr("y", (d) => y(d.value) - 5)
+                  .attr("text-anchor", "middle")
+                  .text((d) => `${d.value} (${(d.value / total * 100).toFixed(1)}%)`)
+                  .attr("fill", "black")
+                  .style("font-size", "14px");
+            }
+        </script>
+        
 </body>
 </html>

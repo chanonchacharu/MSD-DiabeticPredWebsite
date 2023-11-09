@@ -18,4 +18,5 @@ urlpatterns = [
     path("dashboard", data_sci_views.personal_dashboard),
     path('scatter_plot_data/', data_sci_views.scatter_plot_data, name='scatter-plot-data'),
     path('scatter_plot/', data_sci_views.scatter_plot_view, name='scatter-plot'),
+    path('distribution_count', data_sci_views.diabetic_distribution_data),
 ]
