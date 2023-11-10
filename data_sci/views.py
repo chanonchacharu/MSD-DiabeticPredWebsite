@@ -10,6 +10,12 @@ from django.core.paginator import Paginator
 import pandas as pd
 import pickle
 
+def delete_all_pima_indian_diabetic_records(request):
+    all_records = PimaIndianDiabetic.objects.all()
+    all_records.delete()
+    return JsonResponse({'message': 'All records deleted successfully'})
+
+
 def import_diabetic_data_csv(request):
     csv_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN9e5B883gr07NHT0oVWj5Q3d8jE01CqWTcOG_piq_UH2PZKgEjJzwTfj5LrinpEi8TQml2zRhyH3x/pub?output=csv'
     df = pd.read_csv(csv_url)
@@ -36,6 +42,18 @@ def import_diabetic_data_csv(request):
 
     PimaIndianDiabetic.objects.bulk_create(instances, ignore_conflicts=True)  # Using `ignore_conflicts` to skip duplicates
 
+    all_instances = PimaIndianDiabetic.objects.all().order_by('id')
+    paginator = Paginator(all_instances, 25) 
+    page_number = request.GET.get('page', 1)
+    success_instances = paginator.get_page(page_number)
+
+    context = {
+        'success_instances': success_instances,
+    }
+
+    return render(request, 'data_sci/pima_indian_data.html', context)
+
+def visualize_pima_diabetic_kaggle_data(request):
     all_instances = PimaIndianDiabetic.objects.all().order_by('id')
     paginator = Paginator(all_instances, 25) 
     page_number = request.GET.get('page', 1)
@@ -83,6 +101,20 @@ def determine_bmi_category(bmi):
     else:
         return 'Obese'
 
+def health_tracker_data(request):
+    averages = PersonalHealthProfile.objects.aggregate(
+        average_bmi=Avg('BMI'),
+        average_glucose=Avg('Glucose'),
+        average_insulin=Avg('Insulin')
+    )
+
+    context = {
+        'average_bmi': round(averages.get('average_bmi', 0), 2),
+        'average_glucose': round(averages.get('average_glucose', 0), 2),
+        'average_insulin': round(averages.get('average_insulin', 0), 2),
+    }
+
+    return JsonResponse(context, safe=False)
 
 def personal_health_data_add(request):
     last_record = PersonalHealthProfile.objects.latest('added_date')
@@ -262,7 +294,7 @@ def scatter_plot_data(request):
         PimaIndianDiabetic.objects.values(
             "Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
             "Insulin", "BMI", "DiabetesPedigreeFunction", "Age", "Outcome"
-        )
+        ).distinct()
     )
     return JsonResponse(data, safe=False)
 
