@@ -1,2 +1,4 @@
 Django==4.1.13
 django-browser-reload==1.6.0
+xgboost==2.0.1
+lightgbm==4.1.0

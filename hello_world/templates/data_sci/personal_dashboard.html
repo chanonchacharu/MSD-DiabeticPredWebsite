@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diabetes Prediction Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7f6;
+      color: #444;
+    }
+    .main-container {
+      display: flex;
+      min-height: 100vh;
+      padding: 2% 5%;
+      align-items: flex-start;
+      justify-content: space-around;
+    }
+    .form-container, .dashboard-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin: 20px;
+      width: 100%;
+      max-width: 500px; /* Set the max-width according to the smaller of the two for consistency */
+    }
+    .form-header, .dashboard-header {
+      color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      margin: -20px -20px 20px -20px; /* Aligns header with card edges */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .form-header {
+      background-color: #5dade2;
+    }
+    .dashboard-header {
+      background-color: #ff8577;
+      margin-bottom: 20px; /* Moved from .dashboard-container to here for better grouping */
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: .5rem;
+      font-weight: 600;
+    }
+    .form-group input[type="number"],
+    .form-group input[type="text"],
+    .form-group select,
+    .form-group button {
+      width: 100%; /* Changed to 100% to fix the width issue, padding will be added inside */
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .form-group button {
+      border: none;
+      border-radius: 20px;
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    .form-group button:hover {
+      background-color: #218838;
+    }
+    .dashboard-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .status-card {
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 5px;
+      color: #fff;
+      text-align: center;
+    }
+    .status-card.normal {
+      background-color: #4CAF50;
+    }
+    .status-card.pre-diabetes {
+      background-color: #FFEB3B;
+    }
+    .status-card.diabetes {
+      background-color: #F44336;
+    }
+    .dashboard-content {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .changes-container, .health-status {
+      flex: 1;
+      margin: 10px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .health-status {
+      text-align: right;
+    }
+    @media (max-width: 768px) {
+      .dashboard-content {
+        flex-direction: column;
+      }
+      .health-status {
+        text-align: center;
+        order: -1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Input Information</h2>
+        </div>
+        <div>
+            <p style="text-align: center;font-size: smaller;">For Diabetic Status Prediction using Pupe's Algo and Recording</p>
+        </div>
+        <form method="post" action="{% url 'add_data' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="glucose">Glucose</label>
+                <input type="number" value="{{form_data.glucose}}" name="glucose" required>
+            </div>
+            <div class="form-group">
+                <label for="insulin">Insulin</label>
+                <input type="number" value="{{form_data.insulin}}" name="insulin" required>
+            </div>
+            <div class="form-group">
+                <label for="bmi">BMI</label>
+                <input type="text" value="{{form_data.bmi}}" name="bmi" required>
+            </div>
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" value="{{form_data.age}}" name="age" required>
+            </div>
+            <div class="form-group">
+                <label for="pregnancies">Pregnancies</label>
+                <input type="number" value="{{form_data.pregnancies}}" name="pregnancies" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Predict</button>
+            </div>
+        </form>
+        <div>
+          <p style="text-align: center;font-size: smaller;" id="currentDateTime"></p>
+        </div>
+    </div>
+    <!-- Dashboard Section -->
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h2>Status Dashboard</h2>
+      </div>
+      <div>
+        <p style="text-align: center;font-size: smaller;">Your Most Recent Data and diabetic prediction will be shown here</p>
+      </div>
+      <!-- Prediction result -->
+      <div class="status-card {{ result_message|lower }}">
+        Prediction: <strong>{{ result_message }}</strong>
+      </div>
+    
+      <!-- Dashboard content -->
+      <div class="dashboard-content">
+        {% if changes %}
+          <div class="changes-container">
+            <h4>Changes since last record:</h4>
+            <p>Pregnancies Change: {{ changes.pregnancies_change }}</p>
+            <p>Glucose Change: {{ changes.glucose_change }}</p>
+            <p>Insulin Change: {{ changes.insulin_change }}</p>
+            <p>BMI Change: {{ changes.bmi_change }}</p>
+            <p>Age Change: {{ changes.age_change }}</p>
+          </div>
+        {% endif %}
+        <div class="health-status">
+          <h4>Health Status:</h4>
+          <p>Glucose Level: {{ glucose_category }}</p>
+          <p>BMI: {{ bmi_category }}</p>
+        </div>
+      </div>
+    </div>
+    
+</body>
+
+<script>
+  function updateDateTime() {
+    const now = new Date();
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'Asia/Bangkok', 
+      hour12: false 
+    };
+    const dateTimeStr = now.toLocaleString('en-US', options);
+    document.getElementById('currentDateTime').innerText = `Current Date & Time: ${dateTimeStr}`;
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 60000);
+</script>
+
+
+</html>

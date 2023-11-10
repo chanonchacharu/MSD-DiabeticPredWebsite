@@ -1,0 +1,154 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    .table-container {
+        max-width: 90%; 
+        margin: 0 auto; 
+        overflow-x: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+    thead {
+        background-color: #009879;
+        color: #ffffff;
+    }
+    th, td {
+        text-align: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #dddddd;
+    }
+    th {
+        position: sticky;
+        top: 0;
+    }
+    tbody tr:hover {
+        background-color: #f3f3f3;
+    }
+    @media (max-width: 600px) {
+        table {
+            display: block;
+        }
+        thead, tbody, th, td, tr {
+            display: block;
+        }
+        th, td {
+            padding-left: 50%;
+            text-align: right;
+            position: relative;
+        }
+        td::before {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td:nth-of-type(1)::before { content: "Pregnancies"; }
+        td:nth-of-type(2)::before { content: "Glucose"; }
+        td:nth-of-type(3)::before { content: "BloodPressure"; }
+        td:nth-of-type(4)::before { content: "SkinThickness"; }
+        td:nth-of-type(5)::before { content: "Insulin"; }
+        td:nth-of-type(6)::before { content: "BMI"; }
+        td:nth-of-type(7)::before { content: "DiabetesPedigreeFunction"; }
+        td:nth-of-type(8)::before { content: "Age"; }
+        td:nth-of-type(9)::before { content: "Outcome"; }
+    }
+
+    .pagination {
+        text-align: center;
+        padding: 20px 0;
+    }
+
+    .pagination a {
+        color: #009879;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 5px;
+        border: 1px solid #009879;
+        margin: 0 4px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .pagination a:hover {
+        background-color: #009879;
+        color: white;
+    }
+
+    .pagination .current {
+        padding: 8px 16px;
+        margin: 0 4px;
+        border-radius: 5px;
+        background-color: #f3f3f3;
+        display: inline-block;
+    }
+</style>
+
+<body>
+    <div class="content">
+        <h1 style="text-align: center;">PIMA Indian Diabetic Dataset</h1>   
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pregnancies</th>
+                        <th>Glucose</th>
+                        <th>BloodPressure</th>
+                        <th>SkinThickness</th>
+                        <th>Insulin</th>
+                        <th>BMI</th>
+                        <th>DiabetesPedigreeFunction</th>
+                        <th>Age</th>
+                        <th>Outcome</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for instance in success_instances %}
+                        <tr>
+                            <td>{{ instance.Pregnancies }}</td>
+                            <td>{{ instance.Glucose }}</td>
+                            <td>{{ instance.BloodPressure }}</td>
+                            <td>{{ instance.SkinThickness }}</td>
+                            <td>{{ instance.Insulin }}</td>
+                            <td>{{ instance.BMI }}</td>
+                            <td>{{ instance.DiabetesPedigreeFunction }}</td>
+                            <td>{{ instance.Age }}</td>
+                            <td>{{ instance.Outcome }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <p style="text-align: center;">Reference: This dataset was taken from Kaggle.com</p>
+        </div>
+        <div class="pagination">
+            {% if success_instances.has_previous %}
+                <a href="?page={{ success_instances.previous_page_number }}">previous</a>
+            {% endif %}
+            
+            <span class="current">
+                Page {{ success_instances.number }} of {{ success_instances.paginator.num_pages }}.
+            </span>
+            
+            {% if success_instances.has_next %}
+                <a href="?page={{ success_instances.next_page_number }}">next</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
