@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Tracker & Diabetic Prediction Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Merriweather', serif;
+            color: #333;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Work Sans', sans-serif;
+        }
+        h1 {
+            font-weight: 700; 
+        }
+        p {
+            font-weight: 400; 
+        }
+        .header, .footer {
+            background-color: #387272;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header nav a, .footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease-in-out;
+        }
+        .header .logo, .footer {
+            font-weight: bold;
+        }
+        .greeting-header {
+            background-color: #00a2a2;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        .section {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .section-title {
+            text-align: center;
+            color: #387272;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .section-paragraph {
+            text-align: center;
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        .services-container, .tracker-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .service, .tracker {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .service:hover, .tracker:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .service img, .tracker img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+        .service h3, .tracker h3 {
+            font-size: 1.3em;
+            color: #387272;
+            margin-bottom: 5px;
+        }
+        .service p, .tracker p {
+            font-size: 1.1em;
+            color: #978e8e;
+            font-weight: bold;
+            margin-top: auto;
+        }
+        .tracker h3 span { 
+            color: #8da8a8; 
+            font-weight: 600;
+        }
+        .tracker p {
+            font-size: 1.2em;
+            color: #555;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .services-container, .tracker-container {
+                grid-template-columns: 1fr;
+            }
+            .service, .tracker {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header nav {
+                margin-top: 10px;
+            }
+            .header .logo {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Health Services</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Technology</a>
+            <a href="#">Product</a>
+            <a href="#">Learn</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
+    </div>
+
+    <div class="greeting-header">
+        <h1>Hello, [User Name]</h1>
+        <p>Welcome to Apple Health Services</p>
+    </div>
+    
+    <section class="services section">
+        <div class="section-row">
+            <h2 class="section-title">Services</h2>
+            <p class="section-paragraph">
+                Explore our range of services designed to help you manage your health 
+                effectively. From live chat support to in-depth health analysis, our
+                platform provides all the tools you need for a healthier life.
+            </p>
+            <div class="services-container">
+                {% load static %}
+                <div class="service">
+                    <h3>Chatbot</h3>
+                    <img src="{% static 'istockphoto-1148567174-612x612.jpg' %}" alt="Cute Chatbot">
+                    <p>Get assistance</p>
+                </div>
+                <div class="service">
+                    <h3>My Health</h3>
+                    <img src="{% static 'health_icon.jpg'%}" alt="Cute My Health ">
+                    <p>View your health records</p>
+                </div>
+                <div class="service">
+                    <h3>General Data</h3>
+                    <img src="{% static 'general_data.jpg' %}" alt="General Data Icon">
+                    <p>Data Visualization and Analysis</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="health-tracker section">
+        <div class="section-row">
+            <h2 class="section-title">Health Tracker</h2>
+            <p class="section-paragraph">
+                Monitor your health with our comprehensive health tracker. 
+                Keep track of your BMI, heart rate, glucose levels, and 
+                more to stay on top of your health.
+            </p>
+            <div class="tracker-container">
+                <div class="tracker bmi">
+                    <h3><span>Average</span> BMI</h3>
+                    <p><!-- Average BMI --></p>
+                </div>
+                <div class="tracker glucose">
+                    <h3><span>Average</span> Glucose</h3>
+                    <p><!-- Average Glucose --></p>
+                </div>
+                <div class="tracker insulin">
+                    <h3><span>Average</span> Insulin</h3>
+                    <p><!-- Average Insulin --></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <div class="footer">
+        <p>Contact us: contact@example.com</p>
+        <p>&copy; 2023 Health Services Website</p>
+    </div>
+
+    <script>
+        // Function to fetch health data and update the HTML content
+        function fetchAndDisplayHealthData() {
+            fetch('ht_average_record')
+            .then(response => response.json())
+            .then(data => {
+                // Assuming data contains: { average_bmi, average_glucose, average_insulin }
+                document.querySelector('.tracker.bmi p').textContent = data.average_bmi;
+                document.querySelector('.tracker.glucose p').textContent = data.average_glucose;
+                document.querySelector('.tracker.insulin p').textContent = data.average_insulin;
+            })
+            .catch(error => console.error('Error fetching health data:', error));
+        }
+        
+        // Call the function to fetch and display data when the page loads
+        document.addEventListener('DOMContentLoaded', fetchAndDisplayHealthData);
+    </script>
+        
+</body>
+</html>
