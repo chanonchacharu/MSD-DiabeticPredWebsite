@@ -13,7 +13,7 @@ urlpatterns = [
     path("load_diabetic_data", data_sci_views.import_diabetic_data_csv), # Call this API once to avoid duplicate data
     path("visualize_pima_diabetic_kaggle", data_sci_views.visualize_pima_diabetic_kaggle_data),
     path("personal_health_list", data_sci_views.personal_health_data_list, name='personal_health_list'),
-    path("add", data_sci_views.personal_health_data_add, name='add_data'),
+    path("add", data_sci_views.personal_health_data_add, name='add_data'), # outdated api, not calling this
     path("data_sci/edit/<id>", data_sci_views.personal_health_data_edit),
     path("data_sci/delete/<id>", data_sci_views.personal_health_data_delete),
     path("dashboard", data_sci_views.personal_dashboard),
@@ -22,4 +22,5 @@ urlpatterns = [
     path('distribution_count', data_sci_views.diabetic_distribution_data),
     path('result_pima_indian_data', data_sci_views.delete_all_pima_indian_diabetic_records),
     path('ht_average_record', data_sci_views.health_tracker_data),
+    path('d2', data_sci_views.personal_dashboard_v2),
 ]

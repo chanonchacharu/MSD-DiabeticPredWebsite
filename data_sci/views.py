@@ -7,6 +7,8 @@ from django.db.models import Count, Avg, Count
 from data_sci.models import PimaIndianDiabetic, PersonalHealthProfile
 from django.core.paginator import Paginator
 
+from django.core.exceptions import ObjectDoesNotExist
+
 import pandas as pd
 import pickle
 
@@ -102,22 +104,34 @@ def determine_bmi_category(bmi):
         return 'Obese'
 
 def health_tracker_data(request):
-    averages = PersonalHealthProfile.objects.aggregate(
-        average_bmi=Avg('BMI'),
-        average_glucose=Avg('Glucose'),
-        average_insulin=Avg('Insulin')
-    )
+    try:
+        averages = PersonalHealthProfile.objects.aggregate(
+            average_bmi=Avg('BMI'),
+            average_glucose=Avg('Glucose'),
+            average_insulin=Avg('Insulin')
+        )
+        
+        context = {
+            'average_bmi': round(averages.get('average_bmi', 0) or 0, 2),
+            'average_glucose': round(averages.get('average_glucose', 0) or 0, 2),
+            'average_insulin': round(averages.get('average_insulin', 0) or 0, 2),
+        }
 
-    context = {
-        'average_bmi': round(averages.get('average_bmi', 0), 2),
-        'average_glucose': round(averages.get('average_glucose', 0), 2),
-        'average_insulin': round(averages.get('average_insulin', 0), 2),
-    }
-
-    return JsonResponse(context, safe=False)
+        return JsonResponse(context, safe=False)
+    except ObjectDoesNotExist:
+        context = {
+            'average_bmi': 'Not available',
+            'average_glucose': 'Not available',
+            'average_insulin': 'Not available',
+        }
+        return JsonResponse(context, safe=False)
 
 def personal_health_data_add(request):
-    last_record = PersonalHealthProfile.objects.latest('added_date')
+    try:
+        last_record = PersonalHealthProfile.objects.latest('added_date')
+    except PersonalHealthProfile.DoesNotExist:
+        last_record = None
+
     context = {
         'last_record': last_record,
         'result_message': None,
@@ -179,10 +193,10 @@ def personal_health_data_add(request):
         context['bmi_category'] = determine_bmi_category(bmi)
 
         print(f'Get the context: {context}')
-        return render(request, 'data_sci/personal_dashboard.html', context)
+        return render(request, 'data_sci/personal_dashboard_v2.html', context)
 
     print('GET Request')
-    return render(request, 'data_sci/personal_dashboard.html', context)
+    return render(request, 'data_sci/personal_dashboard_v2.html', context)
 
 def personal_health_data_add2(request):
     if request.method == "POST":
@@ -334,3 +348,5 @@ def diabetic_distribution_data(request):
 def personal_dashboard(request):
     return render(request, 'data_sci/personal_dashboard.html')
 
+def personal_dashboard_v2(request):
+    return render(request, 'data_sci/personal_dashboard_v2.html')
