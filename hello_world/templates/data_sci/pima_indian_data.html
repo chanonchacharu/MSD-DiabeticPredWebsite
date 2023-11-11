@@ -99,8 +99,36 @@
 </style>
 
 <body>
+    {% include 'decorators/global_diabetic_overview.html' %}
+    {% include 'decorators/dataset_plot_nav.html' %}
+    <style>
+        .dataset-container {
+            background-color: #f9f9f9; /* Light background for the container */
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 800px; /* Max width for better readability */
+        }
+
+        .dataset-container h1 {
+            text-align: center;
+            color: #4A90E2; /* Theme color for headings */
+            margin-bottom: 16px;
+        }
+
+        .dataset-container p {
+            text-align: justify;
+            margin-bottom: 10px;
+            line-height: 1.6; /* Better line spacing for readability */
+        }      
+    </style>
+    <div class="dataset-container">
+        <h1>PIMA Indian Diabetic Dataset Overview</h1>   
+        <p>The PIMA Indian Diabetic Dataset is a collection of medical diagnostic reports from female patients of Pima Indian heritage. The dataset is an important resource for predicting the onset of diabetes based on diagnostic measures such as insulin level, body mass index, age, and more. Understanding this dataset can help in early detection and preventive measures for diabetes, a chronic disease that affects millions worldwide.</p>
+        <p>Diabetes is a major concern due to its role in increasing the risk of other health complications such as heart disease, stroke, and kidney failure. Early detection and management can greatly reduce these risks.</p>
+    </div>
     <div class="content">
-        <h1 style="text-align: center;">PIMA Indian Diabetic Dataset</h1>   
         <div class="table-container">
             <table>
                 <thead>

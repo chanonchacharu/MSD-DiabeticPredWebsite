@@ -12,11 +12,18 @@ from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 import pickle
 
+from django.contrib.auth.models import User
+from data_sci.serializers import *
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from rest_framework.parsers import JSONParser
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 def delete_all_pima_indian_diabetic_records(request):
     all_records = PimaIndianDiabetic.objects.all()
     all_records.delete()
     return JsonResponse({'message': 'All records deleted successfully'})
-
 
 def import_diabetic_data_csv(request):
     csv_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN9e5B883gr07NHT0oVWj5Q3d8jE01CqWTcOG_piq_UH2PZKgEjJzwTfj5LrinpEi8TQml2zRhyH3x/pub?output=csv'
@@ -350,3 +357,38 @@ def personal_dashboard(request):
 
 def personal_dashboard_v2(request):
     return render(request, 'data_sci/personal_dashboard_v2.html')
+
+def account_page(request):
+    return render(request, 'components/account.html')
+
+@csrf_exempt
+def api_register(request):
+    if request.method == "POST":
+        data = JSONParser().parse(request)
+        serializer = AuthenticationAPISerializer(data=data)
+        if serializer.is_valid():
+            user = User.objects.create_user(
+                username = serializer.data['username'],
+                password = serializer.data['password']
+            )
+            token = Token.objects.create(user=user)
+            return JsonResponse({"status":"success","token":token.key}, status=200)
+        return JsonResponse({"status":"failed","message":"Input not valid."})
+    return JsonResponse({"status":"failed", "message":"Method not allowed."},status=400)
+
+@csrf_exempt
+def api_login(request):
+    if request.method == "POST":
+        data = JSONParser().parse(request)
+        serializer = AuthenticationAPISerializer(data=data)
+        if serializer.is_valid():
+            user = authenticate(
+                username = serializer.data['username'],
+                password = serializer.data['password']
+            )
+            if user is not None:
+                token = Token.objects.get_or_create(user=user)
+                return JsonResponse({"status":"success","token":token[0].key}, status=200)
+            return JsonResponse({"status":"failed","message":"Incorrect username or password"}, status=400)
+        return JsonResponse({"status":"failed","message":"Input not valid."})
+    return JsonResponse({"status":"failed", "message":"Method not allowed."},status=400)

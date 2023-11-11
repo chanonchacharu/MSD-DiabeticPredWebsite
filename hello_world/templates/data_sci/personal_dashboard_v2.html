@@ -6,43 +6,46 @@
   <title>Diabetes Prediction Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
   <style>
-  body {
-    font-family: 'Merriweather', serif;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f4f7f6;
-    color: #444;
-  }
-  h2 {
-    font-family: 'Work Sans', sans-serif;
-  }
-  .main-container {
-    display: flex;
-    min-height: 100vh;
-    padding: 2% 5%;
-    align-items: flex-start;
-    justify-content: space-around;
-  }
-  .form-container, .dashboard-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Increased depth with a larger shadow */
-    margin: 20px;
-    width: 100%;
-    max-width: 500px;
-    position: relative; /* Needed for z-index stacking */
-    z-index: 1; /* Raise the stacking context */
-  }
-  .form-header, .dashboard-header {
-  color: #fff;
-  padding: 1rem 20px; /* Adjust padding to match the container's padding */
-  text-align: center;
-  border-radius: 8px 8px 0 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 2; /* Keep the stacking context */
-}
+    body {
+      font-family: 'Merriweather', serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f7f6;
+      color: #333;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Work Sans', sans-serif;
+    }
+    h2 {
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .main-container {
+      display: flex;
+      min-height: 100vh;
+      padding: 2% 5%;
+      align-items: flex-start;
+      justify-content: space-around;
+    }
+    .form-container, .dashboard-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      margin: 20px;
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+      z-index: 1; 
+    }
+    .form-header, .dashboard-header {
+      color: #fff;
+      padding: 1rem 20px; /* Adjust padding to match the container's padding */
+      text-align: center;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 2; 
+    }
     .form-header {
       background-color: #367450;
     }
@@ -65,28 +68,28 @@
     .form-group select {
       width: 100%; /* Changed to 100% to fix the width issue, padding will be added inside */
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
       margin-bottom: 1rem;
     }
 
     .form-group button {
-    padding: 0.75rem 1.25rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 20px;
-    background-color: #53d769; /* Bright green color, adjusted to match your reference */
-    color: white;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
-    z-index: 2; /* Ensure it's above other elements */
-  }
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 20px;
+      background-color: #50E3C2; /* Bright green color, adjusted to match your reference */
+      color: white;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
+      z-index: 2; /* Ensure it's above other elements */
+    }
     .form-group button:hover {
-      background-color: #218838;
+      background-color: #34c29e;
     }
     .dashboard-container {
       display: flex;
@@ -94,22 +97,26 @@
       align-items: center;
     }
     .status-card {
-    margin: 20px 0;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Consistent larger shadow for depth */
-    font-size: 1.1rem;
-    position: relative;
-    z-index: 1;
-  }
+      margin: 20px 0;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Consistent larger shadow for depth */
+      font-size: 1.1rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
     .status-card.normal {
       background-color: #4CAF50;
+      color: #fff;
     }
     .status-card.pre-diabetes {
       background-color: #FFEB3B;
+      color: #333;
     }
     .status-card.diabetes {
-      background-color: #F44336;
+      background-color: #cc5d55;
+      color: #fff;
     }
     .dashboard-content {
       display: flex;
@@ -119,28 +126,92 @@
     }
     .changes-container, .health-status {
         border: none; /* Removes the border for a cleaner look */
+        padding: 20px;
         margin: 10px 0; /* Adds vertical spacing between items */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Consistent shadow for depth */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
         text-align: center;
         display: flex;
         flex-direction: column;
-        justify-content: center; /* Centers items vertically inside the container */
+        justify-content: center;
         align-items: center;
     }
-    .dashboard-content h4, .dashboard-content p {
-        text-align: center; /* Ensures text is centered within each flex item */
-        width: 100%; /* Each child takes full width to center the text correctly */
-        }
+    .change-item, .health-item {
+      background-color: #e8f4f8; 
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .change-label, .health-label {
+      font-weight: 600;
+      color: #555;
+    }
+    .change-value, .health-value {
+      font-weight: 400;
+      color: #333;
+      background-color: #ffffff; 
+      padding: 5px 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    }
+    .dashboard-content h4 {
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #555; /* Using a color that matches the headers */
+    }
+    .dashboard-content p {
+      font-weight: 300;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      flex-basis: calc(50% - 10px); 
+      margin-bottom: 20px; 
+    }
+    .card-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px; /* Space between cards */
+    }
+    .card-content {
+      padding: 20px;
+    }
+    .card-title {
+      color: #555;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .card-value {
+      font-size: 1.2em;
+      color: #333;
+    }
+    .change .card-content {
+      border-left: 4px solid #50E3C2;
+    }
+    .health .card-content {
+      border-left: 4px solid #4CAF50;
+    }
     @media (max-width: 768px) {
       .main-container {
-        flex-direction: column; /* Stacks the containers on top of each other */
+        flex-direction: column; 
       }
       .form-container, .dashboard-container {
-        width: 90%; /* Gives a bit of margin on the sides for breathing space */
-        max-width: none; /* Allows containers to be responsive */
+        width: 100%; 
+        max-width: none; 
+        margin: 20px 0;
       }
       .status-card, .changes-container, .health-status {
-        margin: 10px 0; /* Adjusts vertical spacing */
+        margin: 10px 0; 
+      }
+      .card-group {
+        flex-direction: column;
+      }
+      .card {
+        flex-basis: 100%;
       }
     }
   </style>
@@ -201,22 +272,60 @@
       <div class="dashboard-content">
         {% if changes %}
         <div class="changes-container">
-            <h4>Changes since last record:</h4>
-            <p>Pregnancies Change: {{ changes.pregnancies_change }}</p>
-            <p>Glucose Change: {{ changes.glucose_change }}</p>
-            <p>Insulin Change: {{ changes.insulin_change }}</p>
-            <p>BMI Change: {{ changes.bmi_change }}</p>
-            <p>Age Change: {{ changes.age_change }}</p>
+          <h4>Changes since last record:</h4>
+          <div class="card-group">
+            <div class="card change">
+              <div class="card-content">
+                <div class="card-title">Pregnancies Change</div>
+                <div class="card-value">{{ changes.pregnancies_change }}</div>
+              </div>
+            </div>
+            <div class="card change">
+              <div class="card-content">
+                <div class="card-title">Glucose Change</div>
+                <div class="card-value">{{ changes.glucose_change }}</div>
+              </div>
+            </div>
+            <div class="card change">
+              <div class="card-content">
+                <div class="card-title">Insulin Change</div>
+                <div class="card-value">{{ changes.insulin_change }}</div>
+              </div>
+            </div>
+            <div class="card change">
+              <div class="card-content">
+                <div class="card-title">BMI Change</div>
+                <div class="card-value">{{ changes.bmi_change }}</div>
+              </div>
+            </div>
+            <div class="card change">
+              <div class="card-content">
+                <div class="card-title">Age Change</div>
+                <div class="card-value">{{ changes.age_change }}</div>
+              </div>
+            </div>
+          </div>
         </div>
         {% endif %}
         <div class="health-status">
           <h4>Health Status:</h4>
-          <p>Glucose Level: {{ glucose_category }}</p>
-          <p>BMI: {{ bmi_category }}</p>
+          <div class="card-group">
+            <div class="card health">
+              <div class="card-content">
+                <div class="card-title">Glucose Level</div>
+                <div class="card-value">{{ glucose_category }}</div>
+              </div>
+            </div>
+            <div class="card health">
+              <div class="card-content">
+                <div class="card-title">BMI</div>
+                <div class="card-value">{{ bmi_category }}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    
+
 </body>
 
 <script>
