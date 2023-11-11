@@ -129,24 +129,21 @@
                 margin-bottom: 10px;
             }
         }
+
+        .service-link {
+            text-decoration: none; /* Removes the underline from the link */
+            color: inherit; /* The link will use the text color from the parent */
+            display: block; /* Makes the entire area clickable */
+        }
+
     </style>
     
 </head>
 <body>
-    <div class="header">
-        <div class="logo">Health Services</div>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">Technology</a>
-            <a href="#">Product</a>
-            <a href="#">Learn</a>
-            <a href="#">About</a>
-            <a href="#">Contact</a>
-        </nav>
-    </div>
+    {% include 'components/header.html' %}
 
     <div class="greeting-header">
-        <h1>Hello, [User Name]</h1>
+        <h1>Hello...</h1>
         <p>Welcome to Apple Health Services</p>
     </div>
     
@@ -161,19 +158,25 @@
             <div class="services-container">
                 {% load static %}
                 <div class="service">
-                    <h3>Chatbot</h3>
-                    <img src="{% static 'istockphoto-1148567174-612x612.jpg' %}" alt="Cute Chatbot">
-                    <p>Get assistance</p>
+                    <a href="" class="service-link">
+                        <h3>Chatbot</h3>
+                        <img src="{% static 'istockphoto-1148567174-612x612.jpg' %}" alt="Cute Chatbot">
+                        <p>Get assistance</p>
+                    </a>
                 </div>
                 <div class="service">
-                    <h3>My Health</h3>
-                    <img src="{% static 'health_icon.jpg'%}" alt="Cute My Health ">
-                    <p>View your health records</p>
+                    <a href="{% url 'dashboard_prediction' %}" class="service-link">
+                        <h3>My Health</h3>
+                        <img src="{% static 'health_icon.jpg'%}" alt="Cute My Health ">
+                        <p>View your health records</p>
+                    </a>
                 </div>
                 <div class="service">
-                    <h3>General Data</h3>
-                    <img src="{% static 'general_data.jpg' %}" alt="General Data Icon">
-                    <p>Data Visualization and Analysis</p>
+                    <a href="{% url 'kaggle_data' %}" class="service-link">
+                        <h3>General Data</h3>
+                        <img src="{% static 'general_data.jpg' %}" alt="General Data Icon">
+                        <p>Data Visualization and Analysis</p>
+                    </a>
                 </div>
             </div>
         </div>
@@ -205,10 +208,7 @@
     </section>
     
 
-    <div class="footer">
-        <p>Contact us: contact@example.com</p>
-        <p>&copy; 2023 Health Services Website</p>
-    </div>
+    {% include 'components/footer.html' %}
 
     <script>
         // Function to fetch health data and update the HTML content

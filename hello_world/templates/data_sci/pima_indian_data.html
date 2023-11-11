@@ -6,6 +6,13 @@
 </head>
 
 <style>
+    body {
+      font-family: 'Merriweather', serif;
+      line-height: 1.6; 
+    }
+    p {
+        font-family: 'Work Sans', sans-serif;
+    }
     .table-container {
         max-width: 90%; 
         margin: 0 auto; 
@@ -99,6 +106,7 @@
 </style>
 
 <body>
+    {% include 'components/header.html' %}
     {% include 'decorators/global_diabetic_overview.html' %}
     {% include 'decorators/dataset_plot_nav.html' %}
     <style>
@@ -113,7 +121,7 @@
 
         .dataset-container h1 {
             text-align: center;
-            color: #4A90E2; /* Theme color for headings */
+            color: #333; 
             margin-bottom: 16px;
         }
 
@@ -180,3 +188,5 @@
     </div>
 </body>
 </html>
+
+{% include 'components/footer.html' %}

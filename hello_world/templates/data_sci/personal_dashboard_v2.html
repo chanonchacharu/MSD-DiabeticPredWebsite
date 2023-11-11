@@ -1,3 +1,5 @@
+{% include 'components/header.html' %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,18 +30,18 @@
       /* Adjust this to 'space-around' if they are still too far apart */
     }
 
-.form-container, .dashboard-container {
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  margin: 20px;
-  width: calc(50% - 40px); /* Adjust this to account for the margin, if necessary */
-  max-width: 500px;
-  position: relative;
-  z-index: 1; 
-  flex: 1; /* This will make each container expand to fill the available space */
-}
+    .form-container, .dashboard-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      margin: 20px;
+      width: calc(50% - 40px); /* Adjust this to account for the margin, if necessary */
+      max-width: 500px;
+      position: relative;
+      z-index: 1; 
+      flex: 1; /* This will make each container expand to fill the available space */
+    }
     .form-header, .dashboard-header {
       color: #fff;
       padding: 1rem 20px; /* Adjust padding to match the container's padding */
@@ -264,7 +266,6 @@
   </style>
 </head>
 <body>
-  {% include 'decorators/dashboard_personal_health_list_nav.html' %}
   <div class="health-records-overview">
     <h1>Advanced Diabetic Predictive Analytics</h1>
     <p>
@@ -287,6 +288,43 @@
       <img class="centered-logo" src="{% static 'database_image.png' %}" alt="AI and ML Diabetes Prediction Logo">
     </div>
   </div>
+  {% include 'decorators/dashboard_personal_health_list_nav.html' %}
+  
+  <style>
+    .dataset-overview {
+        text-align: center;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    }
+    .dataset-overview h1 {
+        font-family: 'Merriweather', serif;
+    }
+
+    .dataset-overview p {
+        text-align: left; 
+        line-height: 1.6; 
+    }
+  </style>
+  <div class="dataset-overview">
+    <h1>Managing Diabetes with AI Predictive Analytics</h1>
+    <p>
+        Our AI-driven platform offers a seamless experience for 
+        monitoring and managing diabetes. Users can easily record 
+        their health data, such as glucose levels and insulin 
+        intake, which the predictive model uses to assess their 
+        current health status. The insights generated help in 
+        understanding potential health trends and risks. 
+        All predictions are conveniently displayed on the Status 
+        Dashboard, allowing for immediate and informed health 
+        management decisions. Changes from the previous entires would 
+        be displayed as well.
+    </p>
+  </div>
+  
   <div class="main-container">
     <div class="form-container">
         <div class="form-header">
@@ -395,8 +433,50 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="learn-more-container">
+      <h2>Learn More About Our AI Solutions</h2>
+      <p>Discover the innovative technology behind our advanced AI models and how they can benefit you.</p>
+      <a href="" class="learn-more-btn">Explore AI Technology</a>
+    </div>
+
+  </div>
 
 </body>
+
+<style>
+  .learn-more-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin: 20px auto;
+    max-width: 500px;
+  }
+  .learn-more-container h2 {
+    color: #127466;
+    margin-bottom: 16px;
+  }
+  .learn-more-container p {
+    color: #333;
+    margin-bottom: 24px;
+  }
+  .learn-more-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #50E3C2;
+    color: #fff;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  .learn-more-btn:hover {
+    background-color: #34c29e;
+  }
+</style>
 
 <script>
   function updateDateTime() {
@@ -419,3 +499,6 @@
 </script>
 
 </html>
+
+
+{% include 'components/footer.html' %}

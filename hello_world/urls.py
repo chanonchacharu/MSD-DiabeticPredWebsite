@@ -8,6 +8,7 @@ from data_sci import views as data_sci_views
 
 urlpatterns = [
     path("", core_views.homepage),
+    path("home", core_views.homepage, name ='homepage'),
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path("load_diabetic_data", data_sci_views.import_diabetic_data_csv), # Call this API once to avoid duplicate data
@@ -26,4 +27,5 @@ urlpatterns = [
     path('api/register/', data_sci_views.api_register),
     path("api/login/", data_sci_views.api_login),
     path("account", data_sci_views.account_page, name='account'),
+    path('test', core_views.test),
 ]
