@@ -25,19 +25,21 @@
       min-height: 100vh;
       padding: 2% 5%;
       align-items: flex-start;
-      justify-content: space-around;
+      /* Adjust this to 'space-around' if they are still too far apart */
     }
-    .form-container, .dashboard-container {
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      margin: 20px;
-      width: 100%;
-      max-width: 500px;
-      position: relative;
-      z-index: 1; 
-    }
+
+.form-container, .dashboard-container {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  width: calc(50% - 40px); /* Adjust this to account for the margin, if necessary */
+  max-width: 500px;
+  position: relative;
+  z-index: 1; 
+  flex: 1; /* This will make each container expand to fill the available space */
+}
     .form-header, .dashboard-header {
       color: #fff;
       padding: 1rem 20px; /* Adjust padding to match the container's padding */
@@ -195,17 +197,51 @@
     .health .card-content {
       border-left: 4px solid #4CAF50;
     }
+
+    .health-records-overview {
+        text-align: center;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .health-records-overview h1 {
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .health-records-overview p {
+        text-align: justify; /* For better readability of longer text */
+        line-height: 1.6;
+        margin-bottom: 1rem; /* Space after paragraph */
+        color: #555;
+    }
+
+    .keyword {
+        font-weight: bold;
+        color: #3498db; /* A color that stands out, like a deep blue */
+        background-color: #eaf1f8; /* A light background color for emphasis */
+        padding: 2px 4px; /* A bit of padding around the text */
+        border-radius: 4px; /* Rounded corners for the background */
+    }
+
+    .highlight {
+        color: #e74c3c; /* A standout color for important text, like a bright red */
+        font-weight: bold;
+    }
+
     @media (max-width: 768px) {
       .main-container {
-        flex-direction: column; 
+        flex-direction: column;
+        align-items: center; /* Center the containers on smaller screens */
       }
       .form-container, .dashboard-container {
-        width: 100%; 
-        max-width: none; 
+        width: 90%;
+        max-width: none;
         margin: 20px 0;
-      }
-      .status-card, .changes-container, .health-status {
-        margin: 10px 0; 
       }
       .card-group {
         flex-direction: column;
@@ -214,9 +250,43 @@
         flex-basis: 100%;
       }
     }
+
+    .image-container {
+        display: flex;
+        justify-content: center; /* Center the images horizontally */
+        gap: 20px; /* Space between images */
+    }
+
+    .centered-logo {
+        width: 250px; /* Or whatever size you prefer */
+        height: auto; /* To maintain aspect ratio */
+    }
   </style>
 </head>
 <body>
+  {% include 'decorators/dashboard_personal_health_list_nav.html' %}
+  <div class="health-records-overview">
+    <h1>Advanced Diabetic Predictive Analytics</h1>
+    <p>
+        Leveraging the power of <span class="keyword">Artificial Intelligence</span> and 
+        <span class="keyword">Machine Learning</span>, our platform provides highly accurate 
+        predictions for the onset of diabetes, utilizing advanced 
+        algorithms capable of learning from a minimal dataset. 
+        This cutting-edge technology assimilates vast arrays of 
+        health data to pinpoint key indicators of diabetic conditions, 
+        enabling early intervention and personalized healthcare 
+        strategies. With precision-driven analytics, the system is 
+        designed to adapt and enhance its predictive accuracy over 
+        time, ensuring that everyone is equipped 
+        with a robust tool for managing and mitigating the risks 
+        associated with diabetes.
+    </p>
+    {% load static %}
+    <div class="image-container">
+      <img class="centered-logo" src="{% static 'ai_ml_prediction_model_logo.png' %}" alt="AI and ML Diabetes Prediction Logo">
+      <img class="centered-logo" src="{% static 'database_image.png' %}" alt="AI and ML Diabetes Prediction Logo">
+    </div>
+  </div>
   <div class="main-container">
     <div class="form-container">
         <div class="form-header">

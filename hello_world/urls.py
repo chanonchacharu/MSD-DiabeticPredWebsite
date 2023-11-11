@@ -15,6 +15,7 @@ urlpatterns = [
     path('scatter_plot/', data_sci_views.scatter_plot_view, name='scatter-plot'),
     path('scatter_plot_data/', data_sci_views.scatter_plot_data, name='scatter-plot-data'),
     path("personal_health_list", data_sci_views.personal_health_data_list, name='personal_health_list'),
+    path('dashboard_v2', data_sci_views.personal_dashboard_v2, name='dashboard_prediction'),
     path("add", data_sci_views.personal_health_data_add, name='add_data'), # outdated api, not calling this
     path("data_sci/edit/<id>", data_sci_views.personal_health_data_edit),
     path("data_sci/delete/<id>", data_sci_views.personal_health_data_delete),
@@ -22,7 +23,6 @@ urlpatterns = [
     path('distribution_count', data_sci_views.diabetic_distribution_data),
     path('result_pima_indian_data', data_sci_views.delete_all_pima_indian_diabetic_records),
     path('ht_average_record', data_sci_views.health_tracker_data),
-    path('dashboard_v2', data_sci_views.personal_dashboard_v2),
     path('api/register/', data_sci_views.api_register),
     path("api/login/", data_sci_views.api_login),
     path("account", data_sci_views.account_page, name='account'),

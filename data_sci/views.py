@@ -75,7 +75,7 @@ def visualize_pima_diabetic_kaggle_data(request):
     return render(request, 'data_sci/pima_indian_data.html', context)
 
 def personal_health_data_list(request):
-    dataset_objs = PersonalHealthProfile.objects.all()
+    dataset_objs = PersonalHealthProfile.objects.all().order_by('-added_date')
     context_data = {
         "filter_type": "All",
         "datasets": dataset_objs,
