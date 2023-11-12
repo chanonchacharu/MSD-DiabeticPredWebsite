@@ -27,5 +27,6 @@ urlpatterns = [
     path('api/register/', data_sci_views.api_register),
     path("api/login/", data_sci_views.api_login),
     path("account", data_sci_views.account_page, name='account'),
-    path('test', core_views.test),
+    path('login/', data_sci_views.login_view, name='login'),  
+    path('logout/', data_sci_views.logout_view, name='logout'),
 ]

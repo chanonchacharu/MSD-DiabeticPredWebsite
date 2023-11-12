@@ -143,8 +143,13 @@
     {% include 'components/header.html' %}
 
     <div class="greeting-header">
-        <h1>Hello...</h1>
-        <p>Welcome to Apple Health Services</p>
+        {% if user.is_authenticated %}
+            <h1>Hello, {{ user.username }}!</h1>
+        {% else %}
+            <h1>Welcome to Health Services</h1>
+        {% endif %}
+        <p>Pleaes to Welcome you to Apple Health Services Portal</p>
+
     </div>
     
     <section class="services section">
@@ -206,7 +211,6 @@
             </div>
         </div>
     </section>
-    
 
     {% include 'components/footer.html' %}
 

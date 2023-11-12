@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 
+from django.contrib.auth import login
+
 from django.db.models import Count, Avg, Count
 
 from data_sci.models import PimaIndianDiabetic, PersonalHealthProfile
@@ -387,8 +389,30 @@ def api_login(request):
                 password = serializer.data['password']
             )
             if user is not None:
-                token = Token.objects.get_or_create(user=user)
-                return JsonResponse({"status":"success","token":token[0].key}, status=200)
+                login(request, user)
+                return JsonResponse({"status":"success"}, status=200)
+                # token = Token.objects.get_or_create(user=user)
+                # return JsonResponse({"status":"success","token":token[0].key}, status=200)
             return JsonResponse({"status":"failed","message":"Incorrect username or password"}, status=400)
         return JsonResponse({"status":"failed","message":"Input not valid."})
     return JsonResponse({"status":"failed", "message":"Method not allowed."},status=400)
+
+from django.contrib.auth.forms import AuthenticationForm
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.contrib.auth import logout
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return HttpResponseRedirect(reverse('homepage')) 
+    else:
+        form = AuthenticationForm()
+    return render(request, 'components/account.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('homepage'))

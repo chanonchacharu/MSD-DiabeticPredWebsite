@@ -26,7 +26,9 @@
     </form>
     <p id="login-response"></p>
   </div>
-
+  <script type="text/javascript">
+    var homepageUrl = "{% url 'homepage' %}";
+  </script>
   <script>
     // Add event listener for the signup form
     document.getElementById('signup-form').addEventListener('submit', function(e) {
@@ -62,7 +64,11 @@
       })
       .then(response => response.json())
       .then(data => {
-        document.getElementById('login-response').textContent = data.status + ': ' + (data.token || data.message);
+        if (data.status === 'success') {
+          window.location.href = homepageUrl; 
+        } else {
+          document.getElementById('login-response').textContent = data.status + ': ' + data.message;
+        }
       });
     });
   </script>
