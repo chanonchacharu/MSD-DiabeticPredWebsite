@@ -1,0 +1,60 @@
+<style>
+    .buttons-container {
+        display: flex;
+        justify-content: center; /* Center the buttons horizontally */
+        gap: 20px; /* Space between buttons */
+        margin-top: 20px;
+    }
+
+    .button {
+        padding: 10px 20px; /* Larger clickable area */
+        border: none; /* Remove default border */
+        border-radius: 5px; /* Rounded corners */
+        background-color: #4A90E2; /* Soft blue background */
+        color: white; /* White text color */
+        font-size: 1rem; /* Larger font size */
+        font-weight: 600; /* Bold font weight */
+        cursor: pointer; /* Cursor changes to a hand icon when hovered */
+        transition: background-color 0.3s, transform 0.1s; /* Smooth transition for hover effects */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+        width: auto; /* Ensures that button width is determined by content size */
+    }
+    
+    .visualize-button {
+        background-color: #39b49a; /* Different color for the visualize button */
+    }
+    
+    .scatter-button {
+        background-color: #196d5f; /* Different color for the scatter plot button */
+    }
+    
+    .button:hover, .button:focus {
+        background-color: #357ABD; /* Darken button color on hover/focus */
+        transform: translateY(-2px); /* Slight raise effect on hover/focus */
+    }
+    
+    /* Responsiveness for smaller screens */
+    @media (max-width: 768px) {
+        .buttons-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .buttons-container form {
+            width: auto; /* Allow the form to size according to its content */
+            margin-bottom: 10px; /* Add some space between stacked buttons */
+        }
+    }
+</style>
+
+<div>
+    <div class="buttons-container">
+        <form action="{% url 'kaggle_data' %}" method="get" class="data-form">
+            <button type="submit" class="button visualize-button">Tabular Data</button>
+        </form>
+        
+        <form action="{% url 'scatter-plot' %}" method="get" class="plot-form">
+            <button type="submit" class="button scatter-button">Visualization</button>
+        </form>
+    </div>
+</div>

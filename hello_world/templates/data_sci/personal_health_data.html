@@ -1,27 +1,193 @@
-<div class="container">
-    <h1>Showing {{ filter_type }} </h1>
-    <table class="table table-striped table-hover">
-        <tr>
-            <th>Diabetic Prediction</th>
-            <th>Glucose</th>
-            <th>Insulin</th>
-            <th>BMI</th>
-            <th>Age</th>
-            <th>Pregnancies</th>
-        </tr>
-        {% for row in datasets %}
-            <tr>
-                <td>{{ row.Prediction }}</td>
-                <td>{{ row.Glucose }}</td>
-                <td>{{ row.Insulin }}</td>
-                <td>{{ row.BMI }}</td>
-                <td>{{ row.Age }}</td>
-                <td>{{ row.Pregnancies }}</td>
-                <td>
-                    <a href="/data_sci/edit/{{ row.id }}">Edit</a>
-                    <a href="/data_sci/delete/{{ row.id }}">Delete</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    body {
+      font-family: 'Merriweather', serif;
+      line-height: 1.6; 
+    }
+    .table-container {
+        max-width: 90%; 
+        margin: 0 auto; 
+        overflow-x: auto;
+    }
+    table {
+        font-family: 'Work Sans', sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        background-color: #ffffff; 
+    }
+    thead {
+        background-color: #009879;
+        color: #ffffff;
+    }
+    th, td {
+        font-size: 1rem; 
+        text-align: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #dddddd;
+    }
+    th {
+        position: sticky;
+        top: 0;
+    }
+    tbody tr:hover {
+        background-color: #ffffff; 
+    }
+    .dataset-container {
+        background-color: #f9f9f9; /* Light background for the container */
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 800px; /* Max width for better readability */
+    }
+
+    .dataset-container h1 {
+        text-align: center;
+        color: #4A90E2; /* Theme color for headings */
+        margin-bottom: 16px;
+    }
+
+    .dataset-container p {
+        text-align: justify;
+        margin-bottom: 10px;
+        line-height: 1.6; /* Better line spacing for readability */
+    }
+    @media (max-width: 600px) {
+        table {
+            display: block;
+        }
+        thead, tbody, th, td, tr {
+            display: block;
+        }
+        th, td {
+            padding-left: 50%;
+            text-align: right;
+            position: relative;
+        }
+        td::before {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td:nth-of-type(1)::before { content: "Diabetic Prediction"; }
+        td:nth-of-type(2)::before { content: "Glucose"; }
+        td:nth-of-type(5)::before { content: "Insulin"; }
+        td:nth-of-type(6)::before { content: "BMI"; }
+        td:nth-of-type(8)::before { content: "Age"; }
+        td:nth-of-type(9)::before { content: "Pregnancies"; }
+        td:nth-of-type(10)::before { content: "Actions"; }
+    }
+    td.button-cell {
+        text-align: center; 
+        padding: 8px; 
+    }
+
+    .edit-button, .delete-button {
+        text-align: center;
+        padding: 8px 16px; 
+        text-decoration: none; 
+        display: inline-block; 
+        margin: 4px; 
+        text-align: center;
+        border-radius: 4px; 
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-sizing: border-box; 
+        width: 80px; 
+    }
+
+    .edit-button {
+        background-color: #80d182; 
+        color: white;
+    }
+
+    .delete-button {
+        background-color: #e08279; 
+        color: white;
+    }
+
+    .button:hover {
+        transform: translateY(-3px); /* Moves the button up a bit to give the float effect */
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Adds shadow to enhance the floating effect */
+    }
+
+    .health-records-overview {
+        text-align: center;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .health-records-overview h1 {
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .health-records-overview p {
+        text-align: justify; /* For better readability of longer text */
+        line-height: 1.6;
+        margin-bottom: 1rem; /* Space after paragraph */
+        color: #555;
+    }
+</style>
+{% include 'components/header.html' %}
+
+{% include 'decorators/dashboard_personal_health_list_nav.html' %}
+<div class="content">
+    <div class="health-records-overview">
+        <h1>Personal Health Records</h1>
+        <p>
+            The distribution of personal health records offers valuable insights 
+            into prevailing health trends and individual medical histories. 
+            By examining patterns in these records, healthcare professionals can 
+            identify risk factors, track disease progression, and tailor treatments
+            to individual needs. Such comprehensive analysis is pivotal in 
+            enhancing patient care and promoting preventative health strategies.
+        </p>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Diabetic Prediction</th>
+                    <th>Glucose</th>
+                    <th>Insulin</th>
+                    <th>BMI</th>
+                    <th>Age</th>
+                    <th>Pregnancies</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in datasets %}
+                <tr>
+                    <td>{{ row.Prediction }}</td>
+                    <td>{{ row.Glucose }}</td>
+                    <td>{{ row.Insulin }}</td>
+                    <td>{{ row.BMI }}</td>
+                    <td>{{ row.Age }}</td>
+                    <td>{{ row.Pregnancies }}</td>
+                    <td>
+                        <a href="/data_sci/edit/{{ row.id }}" class="edit-button">Edit</a>
+                        <a href="/data_sci/delete/{{ row.id }}" class="delete-button">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+{% include 'components/footer.html' %}
