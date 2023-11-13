@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
+from django.urls import reverse
 
 from django.contrib.auth import login
 
@@ -77,7 +78,11 @@ def visualize_pima_diabetic_kaggle_data(request):
     return render(request, 'data_sci/pima_indian_data.html', context)
 
 def personal_health_data_list(request):
-    dataset_objs = PersonalHealthProfile.objects.all().order_by('-added_date')
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('login'))
+    
+    # dataset_objs = PersonalHealthProfile.objects.all().order_by('-added_date')
+    dataset_objs = PersonalHealthProfile.objects.filter(added_by=request.user).order_by('-added_date')
     context_data = {
         "filter_type": "All",
         "datasets": dataset_objs,
@@ -136,8 +141,14 @@ def health_tracker_data(request):
         return JsonResponse(context, safe=False)
 
 def personal_health_data_add(request):
+
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('login'))
+
+    current_user = request.user
+    
     try:
-        last_record = PersonalHealthProfile.objects.latest('added_date')
+        last_record = PersonalHealthProfile.objects.filter(added_by=current_user).latest('added_date')
     except PersonalHealthProfile.DoesNotExist:
         last_record = None
 
@@ -186,6 +197,7 @@ def personal_health_data_add(request):
             BMI=bmi,
             Age=age,
             Prediction=result_message,
+            added_by = current_user,
         )
 
         try:
@@ -205,8 +217,11 @@ def personal_health_data_add(request):
         return render(request, 'data_sci/personal_dashboard_v2.html', context)
 
     print('GET Request')
+    user_records = PersonalHealthProfile.objects.filter(added_by=current_user)
+    context['user_records'] = user_records
     return render(request, 'data_sci/personal_dashboard_v2.html', context)
 
+# Outdated...Not being implemented
 def personal_health_data_add2(request):
     if request.method == "POST":
         form_data = request.POST
