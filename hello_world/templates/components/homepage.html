@@ -170,11 +170,19 @@
                     </a>
                 </div>
                 <div class="service">
-                    <a href="{% url 'dashboard_prediction' %}" class="service-link">
-                        <h3>My Health</h3>
-                        <img src="{% static 'health_icon.jpg'%}" alt="Cute My Health ">
-                        <p>View your health records</p>
-                    </a>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'dashboard_prediction' %}" class="service-link">
+                            <h3>My Health</h3>
+                            <img src="{% static 'health_icon.jpg'%}" alt="Cute My Health ">
+                            <p>View your health records</p>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="service-link">
+                            <h3>My Health</h3>
+                            <img src="{% static 'health_icon.jpg'%}" alt="Cute My Health ">
+                            <p>Login to view your health records</p>
+                        </a>
+                    {% endif %}
                 </div>
                 <div class="service">
                     <a href="{% url 'kaggle_data' %}" class="service-link">
