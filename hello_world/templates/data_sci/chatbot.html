@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatbot Conversation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e5e5e5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat-container {
+      width: 400px;
+      height: 600px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-header {
+      background-color: #4b79a1;
+      color: white;
+      padding: 10px;
+      text-align: center;
+    }
+    .chat-body {
+      padding: 10px;
+      height: 100%;
+      overflow-y: auto;
+    }
+    .chat-message {
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+    .user-message {
+      text-align: right;
+    }
+    .bot-message {
+      text-align: left;
+    }
+    .chat-input {
+      padding: 10px;
+      background-color: #f4f7f9;
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    .chat-input input[type="text"] {
+      flex-grow: 1;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      margin-right: 5px;
+    }
+    .chat-input input[type="submit"] {
+      background-color: #57a957;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="chat-header">
+    <strong>ChatBot</strong>
+  </div>
+  
+  <div class="chat-body">
+    {% for entry in chat_history %}
+      <div class="chat-message user-message">
+        <strong>You:</strong> {{ entry.user }}
+      </div>
+      <div class="chat-message bot-message">
+        <strong>ChatBot:</strong> {{ entry.bot }}
+      </div>
+    {% endfor %}
+  </div>
+  
+  <div class="chat-input">
+    <form method="post" action="{% url 'chatbot' %}">
+      {% csrf_token %}
+      <input type="text" id="message" name="message" placeholder="Type your message here...">
+      <input type="submit" value="Send">
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
