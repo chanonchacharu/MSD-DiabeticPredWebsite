@@ -29,4 +29,5 @@ urlpatterns = [
     path("account", data_sci_views.account_page, name='account'),
     path('login/', data_sci_views.login_view, name='login'),  
     path('logout/', data_sci_views.logout_view, name='logout'),
+    path('chatbot',core_views.chatbot, name='chatbot'),
 ]
