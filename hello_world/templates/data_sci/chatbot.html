@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot Conversation</title>
+    <style>
+        body {
+            font-family: 'Merriweather', serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            flex-direction: column;
+        }
+
+
+        .chat-container-container {
+          display: flex; /* Enable flexbox */
+          justify-content: center; /* Center horizontally */
+          align-items: center; /* Center vertically */
+          height: 100vh; /* Full height of the viewport */
+          flex-direction: column;
+          width: 100%; /* Take up full width to center children */
+        }
+
+
+        .chat-container {
+            width: 350px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .chat-header {
+            background: #4b9ce2;
+            color: white;
+            width: 100%;
+            padding: 20px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .chat-body {
+            padding: 10px;
+            width: 100%;
+            height: 500px; /* Adjust as needed */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .chat-message {
+            margin: 5px;
+            padding: 10px;
+            border-radius: 15px;
+            background-color: #f1f0f0;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background-color: #e7e7e7;
+            align-self: flex-end; /* Aligns user messages to the right */
+        }
+
+        .bot-message {
+            background-color: #d1e3f8;
+            align-self: flex-start; /* Aligns bot messages to the left */
+        }
+
+        .chat-input {
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .chat-input input[type="text"] {
+            width: calc(100% - 90px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-right: 5px;
+        }
+
+        .chat-input input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background-color: #4b9ce2;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+{% include 'components/header.html' %}
+<div class="chat-container-container">
+  <div class="chat-container">
+    <div class="chat-header">
+        <strong>ChatBot</strong>
+    </div>
+    
+    <div class="chat-body">
+        {% for entry in chat_history %}
+            <div class="chat-message user-message">
+                <strong>You:</strong> {{ entry.user }}
+            </div>
+            <div class="chat-message bot-message">
+                <strong>ChatBot:</strong> {{ entry.bot }}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="chat-input">
+        <form method="post" action="{% url 'chatbot' %}">
+            {% csrf_token %}
+            <input type="text" id="message" name="message" placeholder="Type your message here...">
+            <input type="submit" value="Send">
+        </form>
+    </div>
+  </div>
+</div>
+
+{% include 'components/footer.html' %}
+</body>
+</html>
