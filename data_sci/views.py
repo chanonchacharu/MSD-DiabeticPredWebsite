@@ -90,6 +90,7 @@ def personal_health_data_list(request):
 
     return render(request, 'data_sci/personal_health_data.html', context_data)
 
+# Wrapped Custome Prediction Model (pickle file)
 def predict_diabetic_instance(input_data):
     model_path = f'/workspaces/MultiDiabeticWebsite/voting_SVMXGBLGBM.pkl'
     
