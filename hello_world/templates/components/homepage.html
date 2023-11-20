@@ -231,12 +231,12 @@
     {% include 'components/footer.html' %}
 
     <script>
-        // Function to fetch health data and update the HTML content
+        // Function: fetch health data +  update the HTML content
         function fetchAndDisplayHealthData() {
             fetch('ht_average_record')
             .then(response => response.json())
             .then(data => {
-                // Assuming data contains: { average_bmi, average_glucose, average_insulin }
+                // Asign value to html tag ex. class tracker bmi --> p element
                 document.querySelector('.tracker.bmi p').textContent = data.average_bmi;
                 document.querySelector('.tracker.glucose p').textContent = data.average_glucose;
                 document.querySelector('.tracker.insulin p').textContent = data.average_insulin;
