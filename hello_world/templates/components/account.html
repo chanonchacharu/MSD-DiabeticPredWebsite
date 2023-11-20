@@ -195,7 +195,7 @@
       })
       .then(response => response.json())
       .then(data => {
-        document.getElementById('signup-response').textContent = data.status + ': ' + (data.token || data.message);
+        document.getElementById('signup-response').textContent = data.status;
       });
     });
 
