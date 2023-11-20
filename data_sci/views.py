@@ -3,6 +3,10 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.urls import reverse
 
+from django.contrib.auth.forms import AuthenticationForm
+from django.http import HttpResponseRedirect
+from django.contrib.auth import logout
+
 from django.contrib.auth import login
 
 from django.db.models import Count, Avg, Count
@@ -23,11 +27,13 @@ from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+# Function for self-destruct - restart the Kaggle data record
 def delete_all_pima_indian_diabetic_records(request):
     all_records = PimaIndianDiabetic.objects.all()
     all_records.delete()
     return JsonResponse({'message': 'All records deleted successfully'})
 
+# Import Kaggle dataset (from Google Sheet)
 def import_diabetic_data_csv(request):
     csv_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN9e5B883gr07NHT0oVWj5Q3d8jE01CqWTcOG_piq_UH2PZKgEjJzwTfj5LrinpEi8TQml2zRhyH3x/pub?output=csv'
     df = pd.read_csv(csv_url)
@@ -65,6 +71,7 @@ def import_diabetic_data_csv(request):
 
     return render(request, 'data_sci/pima_indian_data.html', context)
 
+# Shows Kaggle dataset in tabular format
 def visualize_pima_diabetic_kaggle_data(request):
     all_instances = PimaIndianDiabetic.objects.all().order_by('id')
     paginator = Paginator(all_instances, 25) 
@@ -77,6 +84,7 @@ def visualize_pima_diabetic_kaggle_data(request):
 
     return render(request, 'data_sci/pima_indian_data.html', context)
 
+# Show User personal health record - empty if no record added
 def personal_health_data_list(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('login'))
@@ -90,7 +98,7 @@ def personal_health_data_list(request):
 
     return render(request, 'data_sci/personal_health_data.html', context_data)
 
-# Wrapped Custome Prediction Model (pickle file)
+# Wrapped Custom Prediction Model (pickle file) --> predict diabetic outcome
 def predict_diabetic_instance(input_data):
     model_path = f'/workspaces/MultiDiabeticWebsite/voting_SVMXGBLGBM.pkl'
     
@@ -100,6 +108,7 @@ def predict_diabetic_instance(input_data):
     
     return y_pred
 
+# Categories diabetic level
 def determine_glucose_level(glucose):
     if glucose < 100:
         return 'Normal'
@@ -108,6 +117,7 @@ def determine_glucose_level(glucose):
     else:
         return 'Diabetes'
 
+# Categories bmi 
 def determine_bmi_category(bmi):
     if bmi < 18.5:
         return 'Underweight'
@@ -118,29 +128,39 @@ def determine_bmi_category(bmi):
     else:
         return 'Obese'
 
+# Show (personal) average of certain field on the homepage 
 def health_tracker_data(request):
-    try:
-        averages = PersonalHealthProfile.objects.aggregate(
-            average_bmi=Avg('BMI'),
-            average_glucose=Avg('Glucose'),
-            average_insulin=Avg('Insulin')
-        )
-        
-        context = {
-            'average_bmi': round(averages.get('average_bmi', 0) or 0, 2),
-            'average_glucose': round(averages.get('average_glucose', 0) or 0, 2),
-            'average_insulin': round(averages.get('average_insulin', 0) or 0, 2),
-        }
+    user = request.user
 
-        return JsonResponse(context, safe=False)
-    except ObjectDoesNotExist:
+    if user.is_authenticated:
+        try:
+            averages = PersonalHealthProfile.objects.filter(added_by=user).aggregate(
+                average_bmi=Avg('BMI'),
+                average_glucose=Avg('Glucose'),
+                average_insulin=Avg('Insulin')
+            )
+            
+            context = {
+                'average_bmi': round(averages.get('average_bmi', 0) or 0, 2),
+                'average_glucose': round(averages.get('average_glucose', 0) or 0, 2),
+                'average_insulin': round(averages.get('average_insulin', 0) or 0, 2),
+            }
+
+        except PersonalHealthProfile.DoesNotExist:
+            context = {
+                'average_bmi': 0,
+                'average_glucose': 0,
+                'average_insulin': 0,
+            }
+    else:
         context = {
             'average_bmi': 'Not available',
             'average_glucose': 'Not available',
             'average_insulin': 'Not available',
         }
-        return JsonResponse(context, safe=False)
+    return JsonResponse(context, safe=False)
 
+# Add new personal health data record
 def personal_health_data_add(request):
 
     if not request.user.is_authenticated:
@@ -222,8 +242,8 @@ def personal_health_data_add(request):
     context['user_records'] = user_records
     return render(request, 'data_sci/personal_dashboard_v2.html', context)
 
-# Outdated...Not being implemented
-def personal_health_data_add2(request):
+# Outdated...Not being implemented -- testing
+def personal_health_data_add_old(request):
     if request.method == "POST":
         form_data = request.POST
         pregnancies = form_data['pregnancies']
@@ -264,6 +284,7 @@ def personal_health_data_add2(request):
 
     return render(request, 'data_sci/diabetic_prediction.html')
 
+# Edit personal health record (in tabular)
 def personal_health_data_edit(request, id):
     try:
         item = PersonalHealthProfile.objects.get(id = id)
@@ -320,6 +341,7 @@ def personal_health_data_edit(request, id):
 
         return render(request, 'data_sci/diabetic_prediction.html', context=context_data)
  
+# Delete personal health record (in tabluar)
 def personal_health_data_delete(request, id):
     dataset_objs = PersonalHealthProfile.objects.filter(id = id)
     if len(dataset_objs) <= 0:
@@ -328,6 +350,7 @@ def personal_health_data_delete(request, id):
     
     return redirect('personal_health_list')
 
+# Retrieved Kaggle data for scatter plot
 def scatter_plot_data(request):
     data = list(
         PimaIndianDiabetic.objects.values(
@@ -337,6 +360,7 @@ def scatter_plot_data(request):
     )
     return JsonResponse(data, safe=False)
 
+# Sendign data for scatter plot
 def scatter_plot_view(request):
     features = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"]
     context = {
@@ -344,6 +368,7 @@ def scatter_plot_view(request):
     }
     return render(request, 'data_sci/visualization.html', context)
 
+# Statistical sumamry for Kaggle Data + distribution of non-diabetic and diabetic
 def diabetic_distribution_data(request):
     total_data_points = PimaIndianDiabetic.objects.count()
 
@@ -370,12 +395,15 @@ def diabetic_distribution_data(request):
 
     return JsonResponse(data, safe=False)
 
+# OLD VERSION: Personal Dashboard
 def personal_dashboard(request):
     return render(request, 'data_sci/personal_dashboard.html')
 
+# NEW VERSION: Current Personal Dashboard implementation -- show
 def personal_dashboard_v2(request):
     return render(request, 'data_sci/personal_dashboard_v2.html')
 
+# Direct to login and sign up page 
 def account_page(request):
     return render(request, 'components/account.html')
 
@@ -413,20 +441,15 @@ def api_login(request):
         return JsonResponse({"status":"failed","message":"Input not valid."})
     return JsonResponse({"status":"failed", "message":"Method not allowed."},status=400)
 
-from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.contrib.auth import logout
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return HttpResponseRedirect(reverse('homepage')) 
+            return HttpResponseRedirect(reverse('homepage')) # redirect to homepage 
     else:
-        form = AuthenticationForm()
+        form = AuthenticationForm() # display blank login form
     return render(request, 'components/account.html', {'form': form})
 
 def logout_view(request):
