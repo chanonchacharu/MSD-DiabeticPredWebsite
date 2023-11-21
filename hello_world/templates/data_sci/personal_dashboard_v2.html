@@ -333,6 +333,11 @@
         <div>
             <p style="text-align: center;font-size: smaller;">For Diabetic Status Prediction using Pupe's Algo and Recording</p>
         </div>
+        {% if error %}
+            <div style="color: red; text-align: center;">
+                {{ error }}
+            </div>
+        {% endif %}
         <form method="post" action="{% url 'add_data' %}">
             {% csrf_token %}
             <div class="form-group">
