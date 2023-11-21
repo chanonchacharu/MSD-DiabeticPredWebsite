@@ -11,7 +11,7 @@ urlpatterns = [
     path("home", core_views.homepage, name ='homepage'), # for redirect in html file
     path("admin/", admin.site.urls), # interact with admin page
     path("__reload__/", include("django_browser_reload.urls")),
-    path("load_diabetic_data", data_sci_views.import_diabetic_data_csv), # )NOT CALL) Call this API once to avoid duplicate data
+    path("load_diabetic_data", data_sci_views.import_diabetic_data_csv), # (NOT CALL) Call this API once to avoid duplicate data
     path("visualize_pima_diabetic_kaggle", data_sci_views.visualize_pima_diabetic_kaggle_data, name='kaggle_data'), # show pima india dataset in tabular format
     path('scatter_plot/', data_sci_views.scatter_plot_view, name='scatter-plot'), # plot data in scatter plot
     path('scatter_plot_data/', data_sci_views.scatter_plot_data, name='scatter-plot-data'), # get data for scatter plot
@@ -32,4 +32,5 @@ urlpatterns = [
     path('chatbot',core_views.chatbot, name='chatbot'), # Direct to chatbot 
     path('api/predict_diabetes/', data_sci_views.diabetic_prediction_api, name='diabetic_prediction_api'),
     path('jokes/',core_views.geek_jokes_api),
+    path('debug_delete', data_sci_views.delete_all_pima_indian_diabetic_records),
 ]
