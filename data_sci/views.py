@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
-from django.contrib import messages
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.urls import reverse
+import requests
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect
@@ -14,10 +14,9 @@ from django.db.models import Count, Avg, Count
 from data_sci.models import PimaIndianDiabetic, PersonalHealthProfile
 from django.core.paginator import Paginator
 
-from django.core.exceptions import ObjectDoesNotExist
-
 import pandas as pd
 import pickle
+import json
 
 from django.contrib.auth.models import User
 from data_sci.serializers import *
@@ -27,13 +26,13 @@ from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-# Function for self-destruct - restart the Kaggle data record
+# API - Function for self-destruct - restart the Kaggle data record
 def delete_all_pima_indian_diabetic_records(request):
     all_records = PimaIndianDiabetic.objects.all()
     all_records.delete()
     return JsonResponse({'message': 'All records deleted successfully'})
 
-# Import Kaggle dataset (from Google Sheet)
+# Web View - Import Kaggle dataset (from Google Sheet)
 def import_diabetic_data_csv(request):
     csv_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN9e5B883gr07NHT0oVWj5Q3d8jE01CqWTcOG_piq_UH2PZKgEjJzwTfj5LrinpEi8TQml2zRhyH3x/pub?output=csv'
     df = pd.read_csv(csv_url)
@@ -71,7 +70,7 @@ def import_diabetic_data_csv(request):
 
     return render(request, 'data_sci/pima_indian_data.html', context)
 
-# Shows Kaggle dataset in tabular format
+# Web View - Shows Kaggle dataset in tabular format
 def visualize_pima_diabetic_kaggle_data(request):
     all_instances = PimaIndianDiabetic.objects.all().order_by('id')
     paginator = Paginator(all_instances, 25) 
@@ -84,7 +83,7 @@ def visualize_pima_diabetic_kaggle_data(request):
 
     return render(request, 'data_sci/pima_indian_data.html', context)
 
-# Show User personal health record - empty if no record added
+# Web View - Show User personal health record - empty if no record added
 def personal_health_data_list(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('login'))
@@ -98,7 +97,7 @@ def personal_health_data_list(request):
 
     return render(request, 'data_sci/personal_health_data.html', context_data)
 
-# Wrapped Custom Prediction Model (pickle file) --> predict diabetic outcome
+# (OLD) Utility Function - Wrapped Custom Prediction Model (pickle file) --> predict diabetic outcome
 def predict_diabetic_instance(input_data):
     model_path = f'/workspaces/MultiDiabeticWebsite/voting_SVMXGBLGBM.pkl'
     
@@ -108,7 +107,21 @@ def predict_diabetic_instance(input_data):
     
     return y_pred
 
-# Categories diabetic level
+# API - Predict Diabetic Status/Condition
+@csrf_exempt
+def diabetic_prediction_api(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            input_data = data.get('input_data')
+            prediction = predict_diabetic_instance(input_data)
+            return JsonResponse({'prediction': prediction.tolist()})
+        except Exception as e:
+            return JsonResponse({'prediction': e})
+    else:
+        return JsonResponse({'prediction': e})
+
+# Utility function - Categories diabetic level 
 def determine_glucose_level(glucose):
     if glucose < 100:
         return 'Normal'
@@ -117,7 +130,7 @@ def determine_glucose_level(glucose):
     else:
         return 'Diabetes'
 
-# Categories bmi 
+# Utility function - Categories bmi 
 def determine_bmi_category(bmi):
     if bmi < 18.5:
         return 'Underweight'
@@ -128,7 +141,7 @@ def determine_bmi_category(bmi):
     else:
         return 'Obese'
 
-# Show (personal) average of certain field on the homepage 
+# API - Show (personal) average of certain field on the homepage 
 def health_tracker_data(request):
     user = request.user
 
@@ -160,7 +173,7 @@ def health_tracker_data(request):
         }
     return JsonResponse(context, safe=False)
 
-# Add new personal health data record
+# Web View -  Add new personal health data record and Display Status Dashboard
 def personal_health_data_add(request):
 
     if not request.user.is_authenticated:
@@ -188,7 +201,27 @@ def personal_health_data_add(request):
     }
 
     if request.method == "POST":
+        #######################################################################
+        # NEW IMPLEMENTATION - prevent signed integer and non-numerical value # 
+        #######################################################################
+        def validate_data_record(value, field):
+            try:
+                val = float(value) if field not in ['pregnancies','age'] else int(value)
+                return val >= 0 
+            except ValueError:
+                return False
+
         form_data = request.POST
+  
+        input_fields = ['pregnancies', 'glucose', 'insulin', 'bmi', 'age']
+        for field in input_fields:
+            value = form_data.get(field)
+            record = validate_data_record(value,field)
+            if record is False:
+                context['error'] = "Invalid Input Detected. Please enter non-negative numeric values"
+                return render(request, 'data_sci/personal_dashboard_v2.html', context)
+
+        # Reach here means that all input data is valid!
         pregnancies = int(form_data.get('pregnancies', 0))
         glucose = float(form_data.get('glucose', 0))
         insulin = float(form_data.get('insulin', 0))
@@ -197,9 +230,26 @@ def personal_health_data_add(request):
 
         input_data = [[pregnancies, glucose, insulin, bmi, age]]
 
-        y_pred = predict_diabetic_instance(input_data)
-        prediction = int(y_pred[0])
-        result_message = 'Diabetes' if prediction == 1 else 'No Diabetes'
+        ###################################################################
+        # OLD IMPLEMENTATION calling Utility Function # 
+        # y_pred = predict_diabetic_instance(input_data)
+        # prediction = int(y_pred[0])
+        # result_message = 'Diabetes' if prediction == 1 else 'No Diabetes'
+        ####################################################################
+
+        ##############################################################################################
+        # NEW IMPLEMENTATION: End-point for diabetic prediction result
+        # requests.post send HTTP requests to URL Endpoint
+        #   URL Endpoint: http://localhost:8000/api/predict_diabetes/ --> Diabetic Prediction Result
+        #   serializes the python dict into a JSON string --> stored in response
+        ##############################################################################################
+        response = requests.post('http://localhost:8000/api/predict_diabetes/', json={'input_data': input_data})
+        if response.status_code == 200:
+            prediction_result = response.json() # convert parse JSON response into python dict
+            prediction = int(prediction_result['prediction'][0])
+            result_message = 'Diabetes' if prediction == 1 else 'No Diabetes'
+        else:
+            result_message = "Error in prediction"
 
         changes = {}
         if last_record:
@@ -237,12 +287,11 @@ def personal_health_data_add(request):
         print(f'Get the context: {context}')
         return render(request, 'data_sci/personal_dashboard_v2.html', context)
 
-    print('GET Request')
     user_records = PersonalHealthProfile.objects.filter(added_by=current_user)
     context['user_records'] = user_records
     return render(request, 'data_sci/personal_dashboard_v2.html', context)
 
-# Outdated...Not being implemented -- testing
+# (OLD) Web View - Outdated...Not being implemented -- testing
 def personal_health_data_add_old(request):
     if request.method == "POST":
         form_data = request.POST
@@ -284,7 +333,7 @@ def personal_health_data_add_old(request):
 
     return render(request, 'data_sci/diabetic_prediction.html')
 
-# Edit personal health record (in tabular)
+# Web View - Edit personal health record (in tabular)
 def personal_health_data_edit(request, id):
     try:
         item = PersonalHealthProfile.objects.get(id = id)
@@ -308,9 +357,14 @@ def personal_health_data_edit(request, id):
         except ValueError:
             return HttpResponse("Invalid input data", status=400)
 
-        y_pred = predict_diabetic_instance(input_data)
-        prediction = int(y_pred[0])
-        result_message = 'Diabetes' if prediction == 1 else 'No Diabetes'
+        # SAME IMPLEMENTATION as the add new data record
+        response = requests.post('http://localhost:8000/api/predict_diabetes/', json={'input_data': input_data})
+        if response.status_code == 200:
+            prediction_result = response.json() # convert parse JSON response into python dict
+            prediction = int(prediction_result['prediction'][0])
+            result_message = 'Diabetes' if prediction == 1 else 'No Diabetes'
+        else:
+            result_message = "Error in prediction"
 
         item.Pregnancies = form_data['pregnancies']
         item.Glucose = form_data['glucose']
@@ -341,7 +395,7 @@ def personal_health_data_edit(request, id):
 
         return render(request, 'data_sci/diabetic_prediction.html', context=context_data)
  
-# Delete personal health record (in tabluar)
+# Server-side View - Delete personal health record (in tabluar)
 def personal_health_data_delete(request, id):
     dataset_objs = PersonalHealthProfile.objects.filter(id = id)
     if len(dataset_objs) <= 0:
@@ -350,7 +404,7 @@ def personal_health_data_delete(request, id):
     
     return redirect('personal_health_list')
 
-# Retrieved Kaggle data for scatter plot
+# API - Retrieved Kaggle data for scatter plot
 def scatter_plot_data(request):
     data = list(
         PimaIndianDiabetic.objects.values(
@@ -360,7 +414,7 @@ def scatter_plot_data(request):
     )
     return JsonResponse(data, safe=False)
 
-# Sendign data for scatter plot
+# Web View - show scatter plot
 def scatter_plot_view(request):
     features = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"]
     context = {
@@ -368,7 +422,7 @@ def scatter_plot_view(request):
     }
     return render(request, 'data_sci/visualization.html', context)
 
-# Statistical sumamry for Kaggle Data + distribution of non-diabetic and diabetic
+# API - Statistical sumamry for Kaggle Data + distribution of non-diabetic and diabetic
 def diabetic_distribution_data(request):
     total_data_points = PimaIndianDiabetic.objects.count()
 
@@ -395,18 +449,19 @@ def diabetic_distribution_data(request):
 
     return JsonResponse(data, safe=False)
 
-# OLD VERSION: Personal Dashboard
+# (OLD) Web View - OLD VERSION: Personal Dashboard --> NOT IMPLEMENTED
 def personal_dashboard(request):
     return render(request, 'data_sci/personal_dashboard.html')
 
-# NEW VERSION: Current Personal Dashboard implementation -- show
+# Web View - NEW VERSION: Current Personal Dashboard implementation -- show
 def personal_dashboard_v2(request):
     return render(request, 'data_sci/personal_dashboard_v2.html')
 
-# Direct to login and sign up page 
+# Web View - Direct to login and sign up page 
 def account_page(request):
     return render(request, 'components/account.html')
 
+# API - Register new account
 @csrf_exempt
 def api_register(request):
     if request.method == "POST":
@@ -422,6 +477,7 @@ def api_register(request):
         return JsonResponse({"status":"failed","message":"Input not valid."})
     return JsonResponse({"status":"failed", "message":"Method not allowed."},status=400)
 
+# API - Login
 @csrf_exempt
 def api_login(request):
     if request.method == "POST":
@@ -441,6 +497,7 @@ def api_login(request):
         return JsonResponse({"status":"failed","message":"Input not valid."})
     return JsonResponse({"status":"failed", "message":"Method not allowed."},status=400)
 
+# Web View - login 
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -452,6 +509,7 @@ def login_view(request):
         form = AuthenticationForm() # display blank login form
     return render(request, 'components/account.html', {'form': form})
 
+# Server-side View - logout - redirect to homepage (not user currently signed in)
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('homepage'))
