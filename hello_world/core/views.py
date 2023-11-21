@@ -6,6 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 import random
 import requests
 
+import json
+
 
 # Web View - Show Homepage
 def homepage(request):
@@ -21,13 +23,29 @@ def chatbot(request):
     if request.method == "POST":
         user_input = request.POST.get('message', '').strip()
         # Get the sentiment analysis
-        sentiment = sentiment_analysis(user_input)
-        print(sentiment, end = '\n\n')
+        # sentiment = sentiment_analysis(user_input)
+        # print(sentiment, end = '\n\n')
+
+
+        ##########
+        ## NEW ###
+        ##########
+        chatbot = MedicalChatbot()
+        sentiment_response = requests.post('http://localhost:8000/api/sentimental_analysis/', json={'text': user_input})
+        if sentiment_response.status_code == 200:
+            # print("Good")
+            sentiment = sentiment_response.json()['prediction']
+            chatbot_response = chatbot.get_response(sentiment['sentiment']['polarity'])
+        else:
+            # print("No")
+            chatbot_response = ""
+        # sentiment_predict = sentiment_response.json()
+        # print(sentiment_predict)
 
         # Get the MedicalChatbot response
-        chatbot = MedicalChatbot()
-        chatbot_response = chatbot.get_response(sentiment['sentiment']['polarity'])
-        print(chatbot_response, end = '\n\n')
+        # chatbot = MedicalChatbot()
+        # chatbot_response = chatbot.get_response(sentiment['sentiment']['polarity'])
+        # print(chatbot_response, end = '\n\n')
 
         if chatbot_response:
             chatbot_response_text = chatbot_response['response']
@@ -43,7 +61,22 @@ def chatbot(request):
 
     return render(request, 'data_sci/chatbot.html', context)
 
-# API - Sentimental Analysis from AI for Thai
+@csrf_exempt
+def sentiment_analysis_api(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        text = data.get('text')
+
+        url = "https://api.aiforthai.in.th/ssense"
+        params = {'text': text}
+        # Personal API Key
+        headers = {'Apikey': "X0022EBklsFzlEKaKE1hZ5BM2GzKdotU"}
+        response = requests.get(url, headers=headers, params=params)
+
+        return JsonResponse({'prediction': response.json()})
+
+
+# Web View - Sentimental Analysis from AI for Thai
 def sentiment_analysis(text):
     # It is possible that the polarity is empty: for example, using only english word
     url = "https://api.aiforthai.in.th/ssense"

@@ -33,4 +33,5 @@ urlpatterns = [
     path('api/predict_diabetes/', data_sci_views.diabetic_prediction_api, name='diabetic_prediction_api'),
     path('jokes/',core_views.geek_jokes_api),
     path('debug_delete', data_sci_views.delete_all_pima_indian_diabetic_records),
+    path('api/sentimental_analysis/', core_views.sentiment_analysis_api),
 ]
