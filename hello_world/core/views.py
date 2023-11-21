@@ -5,9 +5,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 import random
 
+# Web View - Show Homepage
 def homepage(request):
     return render(request, "components/homepage.html")
 
+# Web View - Response from Chatbot
 def chatbot(request):
     if 'chat_history' not in request.session:
         request.session['chat_history'] = []
@@ -39,7 +41,7 @@ def chatbot(request):
 
     return render(request, 'data_sci/chatbot.html', context)
 
-
+# API - Sentimental Analysis from AI for Thai
 def sentiment_analysis(text):
     # It is possible that the polarity is empty: for example, using only english word
     url = "https://api.aiforthai.in.th/ssense"
@@ -57,6 +59,7 @@ def sentiment_analysis(text):
 
     return response.json()
 
+# CHATBOT CLASS 
 class MedicalChatbot:
     def __init__(self):
         self.chatbot_response_thai = {
