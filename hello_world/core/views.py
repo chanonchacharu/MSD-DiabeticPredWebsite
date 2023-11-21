@@ -64,16 +64,21 @@ def chatbot(request):
 @csrf_exempt
 def sentiment_analysis_api(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        text = data.get('text')
+        try:
+            data = json.loads(request.body)
+            text = data.get('text')
 
-        url = "https://api.aiforthai.in.th/ssense"
-        params = {'text': text}
-        # Personal API Key
-        headers = {'Apikey': "X0022EBklsFzlEKaKE1hZ5BM2GzKdotU"}
-        response = requests.get(url, headers=headers, params=params)
+            url = "https://api.aiforthai.in.th/ssense"
+            params = {'text': text}
+            # Personal API Key
+            headers = {'Apikey': "X0022EBklsFzlEKaKE1hZ5BM2GzKdotU"}
+            response = requests.get(url, headers=headers, params=params)
 
-        return JsonResponse({'prediction': response.json()})
+            return JsonResponse({'prediction': response.json()})
+        except Exception as e:
+            return JsonResponse({'prediction': e})
+    else:
+        return JsonResponse({'prediction': e})
 
 
 # Web View - Sentimental Analysis from AI for Thai
