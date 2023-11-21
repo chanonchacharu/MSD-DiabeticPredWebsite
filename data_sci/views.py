@@ -32,7 +32,7 @@ def delete_all_pima_indian_diabetic_records(request):
     all_records.delete()
     return JsonResponse({'message': 'All records deleted successfully'})
 
-# Web View - Import Kaggle dataset (from Google Sheet)
+# (NOT CALL) Web View - Import Kaggle dataset (from Google Sheet)
 def import_diabetic_data_csv(request):
     csv_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN9e5B883gr07NHT0oVWj5Q3d8jE01CqWTcOG_piq_UH2PZKgEjJzwTfj5LrinpEi8TQml2zRhyH3x/pub?output=csv'
     df = pd.read_csv(csv_url)
@@ -73,6 +73,35 @@ def import_diabetic_data_csv(request):
 # Web View - Shows Kaggle dataset in tabular format
 def visualize_pima_diabetic_kaggle_data(request):
     all_instances = PimaIndianDiabetic.objects.all().order_by('id')
+    
+    if not all_instances.exists():
+        csv_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN9e5B883gr07NHT0oVWj5Q3d8jE01CqWTcOG_piq_UH2PZKgEjJzwTfj5LrinpEi8TQml2zRhyH3x/pub?output=csv'
+        df = pd.read_csv(csv_url)
+        print(f"Total records in CSV: {df.shape[0]}") 
+        
+        if df.empty:
+            print("No data found in the CSV.")
+            return render(request, 'data_sci/pima_indian_data.html', {'error': 'No data found in the CSV.'})
+        
+        instances = [
+            PimaIndianDiabetic(
+                Pregnancies=float(row['Pregnancies']),
+                Glucose=float(row['Glucose']),
+                BloodPressure=float(row['BloodPressure']),
+                SkinThickness=float(row['SkinThickness']),
+                Insulin=float(row['Insulin']),
+                BMI=float(row['BMI']),
+                DiabetesPedigreeFunction=float(row['DiabetesPedigreeFunction']),
+                Age=float(row['Age']),
+                Outcome=int(row['Outcome']),
+            )
+            for _ , row in df.iterrows()
+        ]
+
+        PimaIndianDiabetic.objects.bulk_create(instances, ignore_conflicts=True)  # Using `ignore_conflicts` to skip duplicates
+
+
+
     paginator = Paginator(all_instances, 25) 
     page_number = request.GET.get('page', 1)
     success_instances = paginator.get_page(page_number)

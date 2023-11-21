@@ -11,7 +11,7 @@ urlpatterns = [
     path("home", core_views.homepage, name ='homepage'), # for redirect in html file
     path("admin/", admin.site.urls), # interact with admin page
     path("__reload__/", include("django_browser_reload.urls")),
-    path("load_diabetic_data", data_sci_views.import_diabetic_data_csv), # Call this API once to avoid duplicate data
+    path("load_diabetic_data", data_sci_views.import_diabetic_data_csv), # )NOT CALL) Call this API once to avoid duplicate data
     path("visualize_pima_diabetic_kaggle", data_sci_views.visualize_pima_diabetic_kaggle_data, name='kaggle_data'), # show pima india dataset in tabular format
     path('scatter_plot/', data_sci_views.scatter_plot_view, name='scatter-plot'), # plot data in scatter plot
     path('scatter_plot_data/', data_sci_views.scatter_plot_data, name='scatter-plot-data'), # get data for scatter plot
