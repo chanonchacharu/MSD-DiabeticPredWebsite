@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import random
+import requests
+
 
 # Web View - Show Homepage
 def homepage(request):
@@ -59,6 +61,11 @@ def sentiment_analysis(text):
 
     return response.json()
 
+# API - Web API for Jokes to cheer up
+def geek_jokes_api(request):
+    response = requests.get('https://geek-jokes.sameerkumar.website/api?format=json')
+    return JsonResponse({'response': response.json()})
+
 # CHATBOT CLASS 
 class MedicalChatbot:
     def __init__(self):
@@ -104,9 +111,20 @@ class MedicalChatbot:
             query = f'polarity-none'
 
         random_index = random.randint(0, self.response_length_thai - 1)
-        context =  {
-            'polarity': polarity,
-            'response': self.chatbot_response_thai[query][random_index]
-        }
+        if polarity == 'positive':
+            chatbot_defalut_res = f"{self.chatbot_response_thai[query][random_index]}"
+            response = requests.get('http://localhost:8000/jokes').json()
+            print(response)
+            jokes = response['response']['joke']
+            final_response = chatbot_defalut_res + "\nHere are some jokes to cheer you up:\n" + jokes 
+            context =  {
+                'polarity': polarity,
+                'response': final_response,
+            }
+        else:
+            context =  {
+                'polarity': polarity,
+                'response': self.chatbot_response_thai[query][random_index]
+            }
 
         return context

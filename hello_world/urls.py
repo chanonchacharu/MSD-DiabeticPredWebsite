@@ -30,5 +30,6 @@ urlpatterns = [
     path('login/', data_sci_views.login_view, name='login'),  # Login using existing account - precess login form
     path('logout/', data_sci_views.logout_view, name='logout'), # Logout from the current signed in account
     path('chatbot',core_views.chatbot, name='chatbot'), # Direct to chatbot 
-    path('api/predict_diabetes/', data_sci_views.diabetic_prediction_api, name='diabetic_prediction_api')
+    path('api/predict_diabetes/', data_sci_views.diabetic_prediction_api, name='diabetic_prediction_api'),
+    path('jokes/',core_views.geek_jokes_api),
 ]
