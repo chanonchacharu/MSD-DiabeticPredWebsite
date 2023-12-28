@@ -1,7 +1,11 @@
 # Multi-platform: Diabetic Prediction 
 The proposed software is called ‘Diabetic Prediction’. The diabetic prediction project aimed to create an accessible interface for users to predict diabetes risk. A ensemble machine learning model has been developed using a dataset sourced called Pima-Indian Diabetic from Kaggle. This project integrated a model that utilizes user-provided medical information to offer predictive insights. Additionally, the platform provides chatbot-based assistance with sentimental analysis and visualizations of diabetes-related statistics of the general population.
 
-***Remark***: This project is part of the course:<br> DES323 Multi-platform Software Development (MSD) ~ Semester 1 Year 2023
+<div align="center">
+    <img src="resource_diabeticApp/images/medical center.png" style="height: 400px; width: auto;">
+</div>
+
+Remark: This project is part of the course DES323 Multi-platform Software Development (MSD) during the Semester 1 Year 2023
 
 ---
 
@@ -104,3 +108,7 @@ In this section, discussion regarding Frontend and Backend development will be d
 The Diabetic Prediction housing the predictive model demonstrates functionality and can successfully pass through all the test cases. Its ability to process medical data, engage users via the chatbot, and present visualized data is a testament to its usability. While challenges arose during development, the resolution contributed to the interface's overall success. The significance of this working interface extends to its potential for practical use in real-world scenarios. Moreover, the adaptability of the model suggests future scalability, where additional datasets and increased data volumes could further enhance its predictive accuracy.
 
 Future work could focus on exploring additional datasets and enhancing data acquisition could improve the model's accuracy and broaden its applicability. Furthermore, integrating additional functionalities or refining existing ones based on user feedback could elevate the interface's usability and effectiveness in aiding diabetes risk assessment.
+
+---
+
+## Thank you!
