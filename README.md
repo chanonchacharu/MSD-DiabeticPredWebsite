@@ -3,6 +3,8 @@ The proposed software is called ‘Diabetic Prediction’. The diabetic predicti
 
 ***Remark***: This project is part of the course:<br> DES323 Multi-platform Software Development (MSD) ~ Semester 1 Year 2023
 
+---
+
 ## Project Development
 The following diagram shows the use case diagram of the application. Some features are reserved for authenticated users only.
 
@@ -37,4 +39,68 @@ Business Process Modeling Notation for the Diabetic Prediction Website
 
 ---
 
-### README.md will be updated soon
+## Frontend Development: User Interface
+
+In this section, discussion regarding Frontend and Backend development will be discussed. Django, a powerful web framework for Python, allowed seamless deployment of our predictive model to our platform. Apart from Django, integration of JSON and D3.js empowered the delivery of  comprehensive and user-friendly health assistance interface, equipped with predictive analytics and interactive data visualizations.
+
+<div align="center">
+    <h3>Homepage and Login/Signup</h3>
+    <img src="resource_diabeticApp/images/homepage.png" style="height: 300px; width: auto;">
+    <p>Home page</p>
+    <img src="resource_diabeticApp/images/login.png" style="height: 300px; width: auto;">    
+    <p>Login</p>    
+    <img src="resource_diabeticApp/images/signup.png" style="height: 300px; width: auto;">
+    <p>Signup</p>
+</div>
+
+<div align="center">
+    <h3>Kaggle Dataset and Data Visualization with statistics</h3>
+    <img src="resource_diabeticApp/images/kaggle_table.png" style="height: 400px; width: auto;">
+    <p>Pima Indian Diabetic Dataset from Kaggle</p>
+    <img src="resource_diabeticApp/images/visualization_graph.png" style="height: 400px; width: auto;">    
+    <p>Data Visualization using D3.js</p>    
+    <img src="resource_diabeticApp/images/statistics.png" style="height: 400px; width: auto;">
+    <p>Statistics of the Dataset</p>
+</div>
+
+<div align="center">
+    <h3>Diabetic Prediction and Personal Data (CRUD)</h3>
+    <img src="resource_diabeticApp/images/input.png" style="height: 400px; width: auto;">
+    <p>Input information to make prediction</p>
+    <img src="resource_diabeticApp/images/prediction.png" style="height: 400px; width: auto;">
+    <p>Prediction Result</p>
+    <img src="resource_diabeticApp/images/prediction_adv.png" style="height: 400px; width: auto;">    
+    <p>Preduction Result that shows the changes since last record</p>    
+    <img src="resource_diabeticApp/images/personal_data.png" style="height: 400px; width: auto;">
+    <p>Personal Data in a Table with CRUD functionalities</p>
+</div>
+
+
+<div align="center">
+    <h3>Chatbot</h3>
+    <img src="resource_diabeticApp/images/chatbot.png" style="height: 400px; width: auto;">
+    <p>Sample Chatbot response: response is predetermined depending on the result of the sentimental analysis along with joke in the response (to showcase the ability to use external API</p>
+</div>
+
+---
+
+## Backend Development: API Endpoints & Functionalities
+|API end-point|Purpose  |
+|--|--|
+| **api/predict_diabetes/** |  A custom API endpoint for the Diabetic prediction through the ensemble machine learning model. It processes input medical data, utilizing the model to predict the likelihood of diabetes based on the provided information|
+|**distribution_count**| An endpoint that provides summary statistics and distribution of diabetic and non-diabetic instances in the Pima Indian diabetes Kaggle dataset|
+|**scatter_plot_data/**|This endpoint fetches essential data from the Kaggle dataset, specifically curated for Scatter Plot visualization. It enables the extraction of data points necessary for generating comprehensive scatter plots representing various diabetes-related parameters|
+|**ht_average_record:**|Incorporated into the homepage, this endpoint provides a summarized overview of personal statistics related to diabetes. It offers a quick snapshot of essential health indicators, aiding users in understanding their health status at a glance|
+|**api/sentimental_analysis/**|This endpoint performs sentiment analysis tasks. It aids in analyzing and understanding user sentiments, providing valuable insights based on textual data input|
+|**jokes/**|A Web API from RESTful functionalities, this endpoint retrieves random geek jokes from the Geek-Jokes API. It introduces a lighter element within the interface, providing users with entertaining snippets while engaging with the system|
+|**api/register/**|Primarily designed to enable users to register new accounts within the system, this endpoint facilitates the creation of new user accounts|
+|**api/login/**|This endpoint enables seamless login functionality for existing users to their accounts|
+|**debug_delete**|This API endpoint serves a crucial role in the debugging process of our system. Specifically designed for debugging purposes, this endpoint enables the deletion of Kaggle dataset-related information within the system|
+
+---
+
+## Conclusion and Future work
+
+The Diabetic Prediction housing the predictive model demonstrates functionality and can successfully pass through all the test cases. Its ability to process medical data, engage users via the chatbot, and present visualized data is a testament to its usability. While challenges arose during development, the resolution contributed to the interface's overall success. The significance of this working interface extends to its potential for practical use in real-world scenarios. Moreover, the adaptability of the model suggests future scalability, where additional datasets and increased data volumes could further enhance its predictive accuracy.
+
+Future work could focus on exploring additional datasets and enhancing data acquisition could improve the model's accuracy and broaden its applicability. Furthermore, integrating additional functionalities or refining existing ones based on user feedback could elevate the interface's usability and effectiveness in aiding diabetes risk assessment.
